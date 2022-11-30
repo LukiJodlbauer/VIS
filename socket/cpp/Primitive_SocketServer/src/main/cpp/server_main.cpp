@@ -1,15 +1,10 @@
-#include <iostream> // cout, cin
-#include <iostream> // cout, cin
-#include <sys/socket.h> // socket, bind, listen, accept
-#include <netinet/in.h> // IPPROTO_TCP, sockaddr_in,
-// htons/ntohs, INADDR_ANY
-#include <unistd.h> // close
-#include <arpa/inet.h> // inet_ntop/inet_atop
-#include <string.h> // strlen
-#include <semaphore.h> // sem_init
-#include <pthread.h>
-#include <errno.h>
-
+#include <iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <cstring>
+#include <cerrno>
 
 #define BUFFER_SIZE 1024
 #define BACKLOG 5
@@ -18,41 +13,54 @@ using namespace std;
 
 int main(int _argc, char **_argv) {
     setbuf(stdout, nullptr);
-    printf("Starting Server ...\n");
-    int server_fd, new_socket, valread;
-    sockaddr_in serverAddr = {};
-    char buffer[1024] = {0};
-    char *hello = "Hello from server\0";
-    char *ack = "ack\0";
+    printf("starting server ...\n");
 
-    // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    if (_argc < 2) {
+        perror("not enough arguments (port[1])");
+        return -1;
+    }
+
+    int port = atoi(_argv[1]);
+    const char *ack = "ack\0";
+    char buffer[1024] = {0};
+
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd < 0) {
         perror("socket initialization failed");
         exit(EXIT_FAILURE);
     }
+    printf("socket was created ...\n");
 
+    sockaddr_in serverAddr = {};
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(6661);
+    serverAddr.sin_port = htons(port);
 
     if (bind(server_fd, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
         perror("bind method failed");
         exit(EXIT_FAILURE);
     }
-    if (listen(server_fd, 3) < 0) {
+    printf("port was bound ...\n");
+
+    if (listen(server_fd, BACKLOG) < 0) {
         perror("listen method failed");
         exit(EXIT_FAILURE);
     }
+    printf("listening for connections ...\n");
 
     sockaddr_in clientAddr = {};
     int clientAddrLen = sizeof(sockaddr_in);
-    while(true) {
-        if ((new_socket = accept(server_fd, (struct sockaddr *) &clientAddr,
-                                 (socklen_t *) &clientAddrLen)) < 0) {
+    bool doShutdown = false;
+
+    while (true) {
+        int new_socket = accept(server_fd, (struct sockaddr *) &clientAddr,
+                                (socklen_t *) &clientAddrLen);
+        if (new_socket < 0) {
             perror("accept method failed");
             exit(EXIT_FAILURE);
         }
-        bool closeAllConnections = false;
+        printf("accepted connection ...\n");
+
         char serverIp[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, (const void *) &serverAddr.sin_addr, serverIp, INET_ADDRSTRLEN);
         int serverPort = ntohs(serverAddr.sin_port);
@@ -63,36 +71,43 @@ int main(int _argc, char **_argv) {
 
         printf("connection established with socket\n");
         printf("[client (%s, %i); server (%s, %i)]\n", clientIp, clientPort, serverIp, serverPort);
-        while(true) {
+        while (true) {
             memset(&buffer[0], 0, sizeof(buffer));
-            if ((valread = recv(new_socket, buffer, BUFFER_SIZE, 0)) <= 0) {
-                printf("receive failed\n");
+
+            int ret = recv(new_socket, buffer, BUFFER_SIZE, 0);
+            if (ret < 0) {
+                perror("receive failed");
+                return -1;
+            } else if (ret == 0) {
+                printf("connection closed by partner\n");
+                break;
+            }
+
+            if (strcmp(buffer, "drop") == 0) {
+                printf("received drop request\n");
+                break;
+            } else if (strcmp(buffer, "shutdown") == 0) {
+                printf("received shutdown request\n");
+                doShutdown = true;
+                break;
+            }
+
+            ret = send(new_socket, ack, strlen(ack), 0);
+            if (ret < 0) {
+                perror("send failed");
                 return -1;
             }
-            //printf(buffer);
-            if(strcmp(buffer,"drop") == 0 || strcmp(buffer,"quit") == 0){
-                printf("in drop");
-                break;
-            }
-            if(strcmp(buffer,"shutdown") == 0){
-                printf("in shutdown");
-                closeAllConnections = true;
-                break;
-            }
-            //printf("Received %i bytes, Message: %s\n", valread, buffer);
-            send(new_socket, ack, strlen(ack), 0);
         }
+
+        printf("closing connection to socket now ...\n");
         close(new_socket);
-        if(closeAllConnections){
+        if (doShutdown) {
             break;
         }
     }
+
+    printf("shutting down server now ...\n");
     close(server_fd);
-    //send(new_socket, hello, strlen(hello), 0);
-    //printf("Hello message sent\n");
-
-    //close(new_socket);
-
-    //shutdown(server_fd, SHUT_RDWR);
+    shutdown(server_fd, SHUT_RDWR);
     return 0;
 }
