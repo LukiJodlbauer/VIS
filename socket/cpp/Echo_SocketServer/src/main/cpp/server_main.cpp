@@ -25,6 +25,7 @@ int main(int _argc, char **_argv) {
     char dest[1024] = "ECHO: ";
     char *hello = "Hello from server\0";
     char *ack = "ack\0";
+    int port = atoi(_argv[1]);
 
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -34,7 +35,7 @@ int main(int _argc, char **_argv) {
 
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
-    serverAddr.sin_port = htons(6661);
+    serverAddr.sin_port = htons(port);
 
     if (bind(server_fd, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
         perror("bind method failed");
