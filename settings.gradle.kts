@@ -6,4 +6,6 @@ include(
     ":socket:cpp:Primitive_SocketServer",
     ":socket:cpp:Echo_SocketServer",
     "socket:cpp:Udp_SocketServer",
-    "socket:cpp:Udp_SocketClient")
+    "socket:cpp:Udp_SocketClient",
+    "socket:cpp:Ipv6_SocketServer",
+    "socket:cpp:Ipv6_SocketClient")
