@@ -4,40 +4,47 @@
 
 #include "echo_server.h"
 
-void EchoServer::InitializeSocket(int _port, int _buffer_size) {
-    int new_socket, valread;
-    sockaddr_in serverAddr = {};
+void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) {
     char buffer[1024] = {0};
     char dest[1024] = "ECHO: ";
 
-    // Creating socket file descriptor
-    if ((m_server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_fd < 0) {
         perror("socket initialization failed");
         exit(EXIT_FAILURE);
     }
+    printf("socket was created ...\n");
 
+    sockaddr_in serverAddr = {};
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_addr.s_addr = INADDR_ANY;
     serverAddr.sin_port = htons(_port);
 
-    if (bind(m_server_fd, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+    if (bind(server_fd, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
         perror("bind method failed");
         exit(EXIT_FAILURE);
     }
-    if (listen(m_server_fd, 3) < 0) {
+    printf("port was bound ...\n");
+
+    if (listen(server_fd, _backlog) < 0) {
         perror("listen method failed");
         exit(EXIT_FAILURE);
     }
+    printf("listening for connections ...\n");
 
     sockaddr_in clientAddr = {};
     int clientAddrLen = sizeof(sockaddr_in);
+    bool doShutdown = false;
+
     while(true) {
-        if ((new_socket = accept(m_server_fd, (struct sockaddr *) &clientAddr,
-                                 (socklen_t *) &clientAddrLen)) < 0) {
+        int new_socket = accept(server_fd, (struct sockaddr *) &clientAddr,
+                                (socklen_t *) &clientAddrLen);
+        if (new_socket < 0) {
             perror("accept method failed");
             exit(EXIT_FAILURE);
         }
-        bool closeAllConnections = false;
+        printf("accepted connection ...\n");
+
         char serverIp[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, (const void *) &serverAddr.sin_addr, serverIp, INET_ADDRSTRLEN);
         int serverPort = ntohs(serverAddr.sin_port);
@@ -51,26 +58,33 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size) {
         while(true) {
             memset(&buffer[0], 0, sizeof(buffer));
             memset(&dest[6], 0, sizeof(dest)-6);
-            printf(dest);
-            if ((valread = recv(new_socket, buffer, _buffer_size, 0)) <= 0) {
-                printf("receive failed\n");
-            }
-            //printf(buffer);
-            if(strcmp(buffer,"drop") == 0 || strcmp(buffer,"quit") == 0){
-                printf("in drop");
+
+            int ret = recv(new_socket, buffer, _buffer_size, 0);
+            if (ret < 0) {
+                perror("receive failed");
+                break;
+            } else if (ret == 0) {
+                printf("connection closed by partner\n");
                 break;
             }
-            if(strcmp(buffer,"shutdown") == 0){
-                printf("in shutdown");
-                closeAllConnections = true;
+            printf("received: %s\n", buffer);
+
+            if (strcmp(buffer, "drop") == 0) {
+                printf("received drop request\n");
+                break;
+            } else if (strcmp(buffer, "shutdown") == 0) {
+                printf("received shutdown request\n");
+                doShutdown = true;
                 break;
             }
+
             strncat(dest, buffer, sizeof(dest) - strlen(dest) - 1);
-            //printf("Received %i bytes, Message: %s\n", valread, buffer);
             send(new_socket, dest, strlen(dest), 0);
         }
+
+        printf("closing connection to socket now ...\n");
         close(new_socket);
-        if(closeAllConnections){
+        if (doShutdown) {
             break;
         }
     }
@@ -84,6 +98,4 @@ EchoServer::EchoServer() {
     m_server_fd = -1;
 }
 
-EchoServer::~EchoServer() {
-
-}
+EchoServer::~EchoServer() = default;

@@ -23,7 +23,7 @@ public:
 
     EchoServer();
     ~EchoServer();
-    void InitializeSocket(int _port, int _buffer_size);
+    void InitializeSocket(int _port, int _buffer_size, int _backlog);
     void CloseSocket();
 };
 
