@@ -1,6 +1,3 @@
-#include <iostream>
-#include <cerrno>
-
 #include <echo_server.h>
 
 #define BUFFER_SIZE 1024
