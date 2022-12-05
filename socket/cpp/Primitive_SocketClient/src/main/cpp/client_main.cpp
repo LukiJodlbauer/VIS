@@ -51,6 +51,8 @@ int main(int _argc, char **_argv) {
 
     while (true) {
         char message[BUFFER_SIZE];
+        memset(&buffer[0], 0, sizeof(buffer));
+
         cout << "please enter your message : ";
         cin.getline(message, BUFFER_SIZE - 1);
 
