@@ -11,7 +11,7 @@ tasks.register("run", Exec::class) {
     standardInput = System.`in`       // enable commandline input
     val exeDir: String = "${buildDir}/exe/main/debug/"
     val exeFile: String = "Udp_SocketServer"
-    commandLine( exeDir+exeFile) // start command in cmd shell
+    commandLine(exeDir+exeFile, port) // start command in cmd shell
 }
 
 tasks.register("kill", Exec::class) {
