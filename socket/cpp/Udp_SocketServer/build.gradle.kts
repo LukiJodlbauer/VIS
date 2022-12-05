@@ -1,8 +1,11 @@
 plugins {
     `cpp-application`
 }
-// task to run cpp program
+
+val port: String = "6661"
+
 tasks.register("run", Exec::class) {
+    dependsOn("kill")
     dependsOn("build")         // make sure project has been built
     group = "application"                // set task group
     standardInput = System.`in`       // enable commandline input
@@ -11,11 +14,7 @@ tasks.register("run", Exec::class) {
     commandLine( exeDir+exeFile) // start command in cmd shell
 }
 
-//tasks.register("kill", Exec::class){
-//    group="application"
-//
-//    commandLine("fuser -k $port/tcp")
-//}
-
-//tasks["run"].dependsOn("kill")
-//tasks["clean"].dependsOn("kill")
+tasks.register("kill", Exec::class) {
+    group = "application"
+    commandLine("bash", "-c", "lsof -nti:${port} | xargs kill -9")
+}
