@@ -11,7 +11,7 @@ UdpClient::UdpClient() {
 void UdpClient::ConnectSocket(char *_ip, int _port, int _buffer_size) {
     char buffer[_buffer_size];
 
-    int client_fd = socket(AF_INET, SOCK_STREAM, 0);
+    int client_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (client_fd < 0) {
         perror("socket creation error");
         exit(EXIT_FAILURE);
