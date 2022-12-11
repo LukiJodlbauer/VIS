@@ -65,7 +65,7 @@ int main(int _argc, char **_argv) {
             perror("send failed");
             return -1;
         }
-
+        memset(&buffer[0], 0, sizeof(buffer));
         ret = recv(client_fd, buffer, (size_t) BUFFER_SIZE, 0);
         if (ret < 0) {
             perror("receive failed");
