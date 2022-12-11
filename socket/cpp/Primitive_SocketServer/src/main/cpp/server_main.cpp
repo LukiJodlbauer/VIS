@@ -1,16 +1,18 @@
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <cstring>
-#include <cerrno>
+#include <iostream> // cout, cin
+#include <unistd.h> // close
+#include <arpa/inet.h> // inet_ntop/inet_atop
+#include <regex>
 
 #define BUFFER_SIZE 1024
 #define BACKLOG 5
 
-using namespace std;
-
+/**
+*
+* @param _argc amount of given parameters
+* @param _argv parameter from run command(port & ip address which should be used)
+* @return exit type of program 0-> run successfully
+* This function is the entry point of the program it handles the client connections and the communication flow
+*/
 int main(int _argc, char **_argv) {
     setbuf(stdout, nullptr);
     printf("starting server ...\n");
@@ -20,7 +22,7 @@ int main(int _argc, char **_argv) {
         return -1;
     }
 
-    int port = atoi(_argv[1]);
+    int port = std::stoi(_argv[1]);
     const char *ack = "ack\0";
     char buffer[1024] = {0};
 
@@ -74,7 +76,7 @@ int main(int _argc, char **_argv) {
         while (true) {
             memset(&buffer[0], 0, sizeof(buffer));
 
-            int ret = recv(new_socket, buffer, BUFFER_SIZE, 0);
+            long ret = recv(new_socket, buffer, BUFFER_SIZE, 0);
             if (ret < 0) {
                 perror("receive failed");
                 return -1;

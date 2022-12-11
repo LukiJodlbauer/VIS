@@ -4,11 +4,21 @@
 
 #include "../headers/udp_client.h"
 
+/**
+ *  Constructor initializes m_connection with default value
+ */
 UdpClient::UdpClient() {
-
+    m_connection = -1;
 }
-
-void UdpClient::ConnectSocket(char *_ip, int _port, int _buffer_size) {
+/**
+ * @param _ip ip address which should be used
+ * @param _port port which should be used
+ * @param _buffer_size size of buffer for user input
+ * This function start the main socket which accepts the client connections and handles the communication flow
+ * Incoming messages are returned as Echo to the client
+ * Messages are sent over UDP via ipv4
+*/
+void UdpClient::ConnectSocket(char *_ip, int _port, int _buffer_size) { // NOLINT(readability-convert-member-functions-to-static)
     char buffer[_buffer_size];
 
     int client_fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -45,7 +55,7 @@ void UdpClient::ConnectSocket(char *_ip, int _port, int _buffer_size) {
             break;
         }
 
-        int ret = send(client_fd, message, (int) strlen(message), 0);
+        long ret = send(client_fd, message, (int) strlen(message), 0);
         if (ret < 0) {
             perror("send failed");
             exit(EXIT_FAILURE);
@@ -60,12 +70,16 @@ void UdpClient::ConnectSocket(char *_ip, int _port, int _buffer_size) {
             break;
         }
 
-        printf("Received %i bytes, Message: %s\n", ret, buffer);
+        printf("Received %li bytes, Message: %s\n", ret, buffer);
     }
 }
-
-void UdpClient::CloseSocket() {
+/**
+ * This function closes the main socket
+ */
+void UdpClient::CloseSocket() const {
     close(m_connection);
 }
-
+/**
+ *  Default Constructor
+ */
 UdpClient::~UdpClient() = default;

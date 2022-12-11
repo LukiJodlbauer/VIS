@@ -3,8 +3,16 @@
 //
 
 #include "echo_server.h"
-
-void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) {
+/**
+ *
+ * @param _port port which should be used
+ * @param _buffer_size size of buffer for user input
+ * @param _backlog number of connections allowed
+ * This function start the main socket which accepts the client connections and handles the communication flow
+ * Incoming messages are returned as Echo to the client
+ * Messages are send over TCP via ipv4
+ */
+void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { // NOLINT(readability-convert-member-functions-to-static)
     char buffer[1024] = {0};
     char dest[1024] = "ECHO: ";
 
@@ -59,7 +67,7 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) {
             memset(&buffer[0], 0, sizeof(buffer));
             memset(&dest[6], 0, sizeof(dest)-6);
 
-            int ret = recv(new_socket, buffer, _buffer_size, 0);
+            long ret = recv(new_socket, buffer, _buffer_size, 0);
             if (ret < 0) {
                 perror("receive failed");
                 break;
@@ -89,13 +97,20 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) {
         }
     }
 }
-
-void EchoServer::CloseSocket() {
+/**
+ * This function closes the main socket
+ */
+void EchoServer::CloseSocket() const {
     close(m_server_fd);
 }
 
+/**
+ *  Constructor initializes m_server_fd with default value
+ */
 EchoServer::EchoServer() {
     m_server_fd = -1;
 }
-
+/**
+ *  Default Constructor
+ */
 EchoServer::~EchoServer() = default;

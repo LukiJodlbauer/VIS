@@ -11,13 +11,11 @@
 
 #ifndef VIS_ENVIRONMENT_SERVER_H
 #define VIS_ENVIRONMENT_SERVER_H
-using namespace std;
-
 
 class EnvironmentServer {
 public:
     int m_server_fd;
-    bool shutdown;
+    bool m_shutdown;
     struct m_socketParam {
         int socket;
         int bufferSize;

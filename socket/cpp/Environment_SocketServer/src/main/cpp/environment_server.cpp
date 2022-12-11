@@ -6,9 +6,10 @@
 
 /**
  *
- * @param _port port which should be usesd
+ * @param _port port which should be used
  * @param _buffer_size size of buffer for user input
  * This function start the main socket which accepts the client connections and creates threads for each client
+ * Messages are send over TCP via ipv4
  */
 void EnvironmentServer::InitializeSocket(int _port, int _buffer_size) {
     int new_socket;
@@ -34,7 +35,7 @@ void EnvironmentServer::InitializeSocket(int _port, int _buffer_size) {
 
     sockaddr_in clientAddr = {};
     int clientAddrLen = sizeof(sockaddr_in);
-    while (!shutdown) {
+    while (!m_shutdown) {
         if ((new_socket = accept(m_server_fd, (struct sockaddr *) &clientAddr,
                                  (socklen_t *) &clientAddrLen)) <= 0) {
             perror("accept method failed");
@@ -68,11 +69,11 @@ void EnvironmentServer::InitializeSocket(int _port, int _buffer_size) {
 }
 
 /**
- *  Constructor initializes m_server_fd with default value and shutdown with false
+ *  Constructor initializes m_server_fd with default value and m_shutdown with false
  */
 EnvironmentServer::EnvironmentServer() {
     m_server_fd = -1;
-    shutdown = false;
+    m_shutdown = false;
 }
 /**
  *  Default Constructor
@@ -87,7 +88,7 @@ EnvironmentServer::~EnvironmentServer() = default;
  * Every other input will be returned as Echo
  */
 void *EnvironmentServer::ClientCommunication(void *_parameter) {
-    //extract inforgmation from parameter
+    //extract information from parameter
     auto *p = (m_socketParam *) _parameter;
     int clientSocket = p->socket;
     int _bufferSize = p->bufferSize;
@@ -101,7 +102,6 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
     char result[1024] = {0};
 
     //const strings
-
     char randomNumber[1024] = {0};
     char dest[1024] = "ECHO: ";
     char light[6] = "light";
@@ -109,7 +109,7 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
     char air[4] = "air";
 
     long valread;
-    while (!server->shutdown) {
+    while (!server->m_shutdown) {
         //clear used char[] for next input
         memset(&buffer[0], 0, sizeof(buffer));
         memset(&dest[6], 0, sizeof(dest) - 6);
@@ -120,10 +120,10 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
         //timestamp generation
         const auto longTimestamp = std::chrono::duration_cast<std::chrono::seconds>(
                 std::chrono::system_clock::now().time_since_epoch()).count();
-        strcpy(timestamp, to_string(longTimestamp).c_str());
+        strcpy(timestamp, std::to_string(longTimestamp).c_str());
         
         //brake in each if, to exit loop, close socket and kill thread
-        if ((valread = recv(clientSocket, buffer, _bufferSize, 0)) <= 0 && !server->shutdown) {
+        if ((valread = recv(clientSocket, buffer, _bufferSize, 0)) <= 0 && !server->m_shutdown) {
             if (valread <= 0) {
                 //TODO ERROR
             }
@@ -135,24 +135,24 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
             break;
         }
         if (strcmp(buffer, "shutdown") == 0) {
-            server->shutdown = true;
+            server->m_shutdown = true;
             server->CloseSocket();
             printf("after close Socket");
             break;
         }
 
         //continue in each if, method result is send to client no further actions to be done
-        if (regex_match(buffer, regex("getSensortypes\\(\\)"))) {
+        if (regex_match(buffer, std::regex("getSensortypes\\(\\)"))) {
             send(clientSocket, "light;noise;air\n", strlen("light;noise;air\n"), 0);
             continue;
         }
-        if (regex_match(buffer, regex("getSensor\\([A-z]{3,5}\\)"))) {
+        if (regex_match(buffer, std::regex("getSensor\\([A-z]{3,5}\\)"))) {
 
-            printf("getsensor\n");
+            printf("getSensor\n");
             //regex for extracting method parameter
             //(?<=\().+?(?=\)) would be nicer but c++ does not support lookbehinds
-            cmatch m;
-            regex_search(buffer, m, regex("\\(.*?\\)"));
+            std::cmatch m;
+            regex_search(buffer, m, std::regex("\\(.*?\\)"));
             //strcat(result, timestamp);
 
             if (m[0].compare("(air)") == 0) {
@@ -174,7 +174,7 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
             continue;
         }
         //call getRandomNumbers for each sensor and send message to client
-        if (regex_match(buffer, regex("getAllSensors\\(\\)"))) {
+        if (regex_match(buffer, std::regex("getAllSensors\\(\\)"))) {
             //strcat(result, timestamp);
             server->getRandomNumbers(1, randomNumber, light);
             server->getRandomNumbers(3, randomNumber, air);
@@ -241,7 +241,7 @@ void EnvironmentServer::getRandomNumbers(int _amount, char *_result, char _senso
     //add sensor char[]
     if (_sensor != nullptr) {
         strcat(delimiter, _sensor);
-        cout << _sensor;
+        std::cout << _sensor;
         strcat(_result, delimiter);
         strncpy(delimiter, ";", sizeof(delimiter));
     }

@@ -4,13 +4,27 @@
 
 #include "../headers/ipv_6_server.h"
 
+/**
+ *  Constructor initializes m_server_fd with default value
+ */
 Ipv6Server::Ipv6Server() {
     m_server_fd = -1;
 }
-
+/**
+ *  Default Constructor
+ */
 Ipv6Server::~Ipv6Server() = default;
 
-void Ipv6Server::InitializeSocket(char *ip, int _port, int _buffer_size, int _backlog) {
+/**
+ * @param _ip ip address which should be used
+ * @param _port port which should be used
+ * @param _buffer_size size of buffer for user input
+ * @param _backlog number of connections allowed
+ * This function start the main socket which accepts the client connections and handles the communication flow
+ * Incoming messages are returned as Echo to the client
+ * Messages are send over TCP with ipv6
+*/
+void Ipv6Server::InitializeSocket(char *_ip, int _port, int _buffer_size, int _backlog) { // NOLINT(readability-convert-member-functions-to-static)
     char buffer[1024] = {0};
     char dest[1024] = "ECHO: ";
 
@@ -27,11 +41,11 @@ void Ipv6Server::InitializeSocket(char *ip, int _port, int _buffer_size, int _ba
     serverAddr.sin6_scope_id = 0;
     serverAddr.sin6_port = htons(_port);
 
-    int ret = inet_pton(AF_INET6, ip, &serverAddr.sin6_addr);
-    if (ret == -1) {
+    int ip = inet_pton(AF_INET6, _ip, &serverAddr.sin6_addr);
+    if (ip == -1) {
         perror("error while converting ipv6");
         exit(EXIT_FAILURE);
-    } else if (ret == 0) {
+    } else if (ip == 0) {
         perror("error ip is not a valid string");
         exit(EXIT_FAILURE);
     }
@@ -76,7 +90,7 @@ void Ipv6Server::InitializeSocket(char *ip, int _port, int _buffer_size, int _ba
             memset(&buffer[0], 0, sizeof(buffer));
             memset(&dest[6], 0, sizeof(dest)-6);
 
-            ret = recv(new_socket, buffer, _buffer_size, 0);
+            long ret = recv(new_socket, buffer, _buffer_size, 0);
             if (ret < 0) {
                 perror("receive failed");
                 break;
@@ -106,7 +120,9 @@ void Ipv6Server::InitializeSocket(char *ip, int _port, int _buffer_size, int _ba
         }
     }
 }
-
-void Ipv6Server::CloseSocket() {
+/**
+ * This function closes the main socket
+ */
+void Ipv6Server::CloseSocket() const {
     close(m_server_fd);
 }

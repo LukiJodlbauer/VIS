@@ -1,13 +1,10 @@
 //
 // Created by Nico Oliver on 07.12.22.
 //
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <cerrno>
-#include <cstring>
+#include <iostream> // cout, cin
+#include <unistd.h> // close
+#include <arpa/inet.h> // inet_ntop/inet_atop
+#include <regex>
 
 #ifndef VIS_IPV_6_SERVER_H
 #define VIS_IPV_6_SERVER_H
@@ -19,8 +16,8 @@ public:
 
     Ipv6Server();
     ~Ipv6Server();
-    void InitializeSocket(char *ip, int _port, int _buffer_size, int _backlog);
-    void CloseSocket();
+    void InitializeSocket(char *_ip, int _port, int _buffer_size, int _backlog);
+    void CloseSocket() const;
 };
 
 
