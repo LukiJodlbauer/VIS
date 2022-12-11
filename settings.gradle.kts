@@ -1,5 +1,6 @@
 rootProject.name = "VIS"
 include(
+    ":general:EnvironmentI",
     ":socket:java:HelloWorld",
     ":socket:java:Echo_SocketServer",
     ":socket:java:Echo_SocketClient",
