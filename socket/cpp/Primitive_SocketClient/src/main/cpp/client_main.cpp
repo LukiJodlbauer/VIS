@@ -1,14 +1,17 @@
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <string.h>
+#include <iostream> // cout, cin
+#include <unistd.h> // close
+#include <arpa/inet.h> // inet_ntop/inet_atop
+#include <regex>
 
 #define BUFFER_SIZE 1024
 
-using namespace std;
-
+/**
+*
+* @param _argc amount of given parameters
+* @param _argv parameter from run command(port & ip address which should be used)
+* @return exit type of program 0-> run successfully
+* This function is the entry point of the program it handles the client connections and the communication flow
+*/
 int main(int _argc, char **_argv) {
     setbuf(stdout, nullptr);
     printf("starting client ...\n");
@@ -18,7 +21,7 @@ int main(int _argc, char **_argv) {
         return -1;
     }
 
-    int port = atoi(_argv[1]);
+    int port = std::stoi(_argv[1]);
     char *ip = _argv[2];
 
     printf("found the following ip and port: ");
@@ -53,14 +56,14 @@ int main(int _argc, char **_argv) {
         char message[BUFFER_SIZE];
         memset(&buffer[0], 0, sizeof(buffer));
 
-        cout << "please enter your message : ";
-        cin.getline(message, BUFFER_SIZE - 1);
+        std::cout << "please enter your message : ";
+        std::cin.getline(message, BUFFER_SIZE - 1);
 
         if (strcmp(message, "quit") == 0) {
             break;
         }
 
-        int ret = send(client_fd, message, (int) strlen(message), 0);
+        long ret = send(client_fd, message, (int) strlen(message), 0);
         if (ret < 0) {
             perror("send failed");
             return -1;
@@ -75,7 +78,7 @@ int main(int _argc, char **_argv) {
             break;
         }
 
-        printf("Received %i bytes, Message: %s\n", ret, buffer);
+        printf("Received %li bytes, Message: %s\n", ret, buffer);
     }
 
     printf("closing connection now ...\n");
