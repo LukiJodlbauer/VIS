@@ -92,11 +92,8 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
     int clientSocket = p->socket;
     int _bufferSize = p->bufferSize;
     EnvironmentServer *server = p->serverClass;
-    //timestamp generation
-    const auto longTimestamp = std::chrono::duration_cast<std::chrono::seconds>(
-            std::chrono::system_clock::now().time_since_epoch()).count();
+    
     char timestamp[1024] = {0};
-    strcpy(timestamp, to_string(longTimestamp).c_str());
 
     //char[] for user input
     char buffer[1024] = {0};
@@ -104,6 +101,8 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
     char result[1024] = {0};
 
     //const strings
+
+    char randomNumber[1024] = {0};
     char dest[1024] = "ECHO: ";
     char light[6] = "light";
     char noise[6] = "noise";
@@ -115,6 +114,14 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
         memset(&buffer[0], 0, sizeof(buffer));
         memset(&dest[6], 0, sizeof(dest) - 6);
         memset(&result[0], 0, sizeof(result));
+        memset(&randomNumber[0], 0, sizeof(randomNumber));
+        memset(&timestamp[0], 0, sizeof(timestamp));
+        
+        //timestamp generation
+        const auto longTimestamp = std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::system_clock::now().time_since_epoch()).count();
+        strcpy(timestamp, to_string(longTimestamp).c_str());
+        
         //brake in each if, to exit loop, close socket and kill thread
         if ((valread = recv(clientSocket, buffer, _bufferSize, 0)) <= 0 && !server->shutdown) {
             if (valread <= 0) {
@@ -122,6 +129,8 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
             }
             break;
         }
+        printf("received: %s\n", buffer);
+
         if (strcmp(buffer, "drop") == 0 || strcmp(buffer, "quit") == 0) {
             break;
         }
@@ -134,37 +143,43 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
 
         //continue in each if, method result is send to client no further actions to be done
         if (regex_match(buffer, regex("getSensortypes\\(\\)"))) {
-            send(clientSocket, "light;noise;air\0", strlen("light;noise;air\0"), 0);
+            send(clientSocket, "light;noise;air\n", strlen("light;noise;air\n"), 0);
             continue;
         }
         if (regex_match(buffer, regex("getSensor\\([A-z]{3,5}\\)"))) {
+
+            printf("getsensor\n");
             //regex for extracting method parameter
             //(?<=\().+?(?=\)) would be nicer but c++ does not support lookbehinds
             cmatch m;
             regex_search(buffer, m, regex("\\(.*?\\)"));
-            //append timestamp to result
-            strcat(result, timestamp);
-            //generate 3 values for air
-            if (m[0].compare("(air")) {
-                server->getRandomNumbers(3, result, nullptr);
+            //strcat(result, timestamp);
+
+            if (m[0].compare("(air)") == 0) {
+                printf("air\n");
+                server->getRandomNumbers(3, randomNumber, nullptr);
+                printf("random Number: %s\n", randomNumber);
+                sprintf(result, "%s%s\n", timestamp, randomNumber);
                 send(clientSocket, result, strlen(result), 0);
-            }
-            //generate 1 value light and noise
-            if (m[0].compare("(ligth") || m[0].compare("(noise")) {
-                server->getRandomNumbers(1, result, nullptr);
+            } else if (m[0].compare("(light)") == 0 || m[0].compare("(noise)") == 0) {
+                printf("light or noise\n");
+                server->getRandomNumbers(1, randomNumber, nullptr);
+                printf("random Number: %s\n", randomNumber);
+                sprintf(result, "%s%s\n", timestamp, randomNumber);
                 send(clientSocket, result, strlen(result), 0);
             } else {
-                //send information if given sensor type is not supported
-                send(clientSocket, "Parameter not supported\0", strlen("Parameter not supported\0"), 0);
+                printf("other parameter\n");
+                send(clientSocket, "Parameter not supported\n", strlen("Parameter not supported\n"), 0);
             }
             continue;
         }
         //call getRandomNumbers for each sensor and send message to client
         if (regex_match(buffer, regex("getAllSensors\\(\\)"))) {
-            strcat(result, timestamp);
-            server->getRandomNumbers(1, result, light);
-            server->getRandomNumbers(3, result, air);
-            server->getRandomNumbers(1, result, noise);
+            //strcat(result, timestamp);
+            server->getRandomNumbers(1, randomNumber, light);
+            server->getRandomNumbers(3, randomNumber, air);
+            server->getRandomNumbers(1, randomNumber, noise);
+            sprintf(result, "%s%s\n", timestamp, randomNumber);
 
             send(clientSocket, result, strlen(result), 0);
             continue;
@@ -233,6 +248,7 @@ void EnvironmentServer::getRandomNumbers(int _amount, char *_result, char _senso
     //generate amount many values and append to result
     for (int i = 0; i < _amount; i++) {
         char integer_string[32];
+        memset(&integer_string[0], 0, sizeof(integer_string));
         sprintf(integer_string, "%d", distr(gen));
         strcat(delimiter, integer_string);
         strcat(_result, delimiter);
