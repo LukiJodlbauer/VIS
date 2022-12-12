@@ -1,20 +1,20 @@
 package at.fhooe.sail.vis.main;
 
 import at.fhooe.sail.vis.socket.Environment_SocketClient;
-import at.fhooe.sail.vis.test.EnvData;
-import at.fhooe.sail.vis.test.IEnvService;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.util.Arrays;
-import java.util.Scanner;
-
+/**
+ * Basic Class for testing our C++ EnvironmentServer
+ */
 public class EnvironmentClient_Main {
+
+	/**
+	 * Entry point of application
+	 *
+	 * @param _argv contains startup parameters
+	 */
 	public static void main(String[] _argv) {
 		IEnvService service = new Environment_SocketClient();
-//		while (true) {
+		while (true) {
 			String[] sensors = service.requestEnvironmentDataTypes();
 			for (String sensor : sensors) {
 				EnvData dataO = service.requestEnvironmentData(sensor);
@@ -33,6 +33,6 @@ public class EnvironmentClient_Main {
 			} catch (Exception _e) {
 				_e.printStackTrace();
 			}
-//		}
+		}
 	}
 }

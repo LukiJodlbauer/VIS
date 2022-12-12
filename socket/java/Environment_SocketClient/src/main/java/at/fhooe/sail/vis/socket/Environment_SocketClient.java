@@ -1,7 +1,7 @@
 package at.fhooe.sail.vis.socket;
 
-import at.fhooe.sail.vis.test.EnvData;
-import at.fhooe.sail.vis.test.IEnvService;
+import at.fhooe.sail.vis.main.EnvData;
+import at.fhooe.sail.vis.main.IEnvService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,19 +10,45 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
+/**
+ * A simple socket client for testing the C++ Environment-Server.
+ */
 public class Environment_SocketClient implements IEnvService {
-    String mIpAddress = "127.0.0.1";
-    int mPort = 4949;
-    Socket mSocket;
-    InputStream mInputStream;
+    /**
+     * ip address of the Socket to which the client should connect.
+     */
+    String       mIpAddress;
+    /**
+     * port of the Socket to which the client should connect.
+     */
+    int          mPort;
+    /**
+     * Socket instance of the connection.
+     */
+    Socket       mSocket;
+    /**
+     * InputStream of the connection
+     */
+    InputStream  mInputStream;
+    /**
+     * OutputStream of the connection
+     */
     OutputStream mOutputStream;
 
+    /**
+     * Constructor for initializing ip address and port. Once called it automatically starts the connection.
+     */
     public Environment_SocketClient() {
+        mIpAddress = "127.0.0.1";
+        mPort = 4949;
         connect();
     }
 
+    /**
+     * Called from Constructor. It tries to connect to the ip address
+     * and port specified in the constructor and sets Input- and OutputStream.
+     */
     private void connect() {
         System.out.println("starting client ...");
 
@@ -38,6 +64,10 @@ public class Environment_SocketClient implements IEnvService {
         }
     }
 
+    /**
+     * Can be used to manually close the Input- and OutputStream as well as the
+     * Socket connection.
+     */
     public void disconnect() {
         try {
             mOutputStream.close();
@@ -63,18 +93,18 @@ public class Environment_SocketClient implements IEnvService {
         System.out.println("requestEnvironmentData: " + _type);
 
         var result = new EnvData();
-        result.setmSensorName(_type);
+        result.setSensorName(_type);
 
         sendCommand(String.format("getSensor(%s)", _type));
         var parts = getResponse().split("\\|");
 
         long timestamp = Long.parseLong(parts[0]);
-        result.setmTimestamp(timestamp);
+        result.setTimestamp(timestamp);
 
         int[] values = Arrays.stream(parts[1].split(";"))
                 .mapToInt(Integer::parseInt)
                 .toArray();
-        result.setmValues(values);
+        result.setValues(values);
 
         return result;
     }
@@ -95,11 +125,11 @@ public class Environment_SocketClient implements IEnvService {
             var partsList = new ArrayList<>(List.of(part.split(";")));
 
             var envData = new EnvData();
-            envData.setmTimestamp(timestamp);
-            envData.setmSensorName(partsList.remove(0));
+            envData.setTimestamp(timestamp);
+            envData.setSensorName(partsList.remove(0));
 
             int[] values = partsList.stream().mapToInt(Integer::parseInt).toArray();
-            envData.setmValues(values);
+            envData.setValues(values);
 
             results.add(envData);
         }
@@ -107,6 +137,12 @@ public class Environment_SocketClient implements IEnvService {
         return results.toArray(new EnvData[0]);
     }
 
+    /**
+     * Writes the command given as parameter to the OutputStream and
+     * flushes it.
+     *
+     * @param _command the command to be written to the stream
+     */
     private void sendCommand(String _command) {
         try {
             mOutputStream.write(_command.getBytes());
@@ -116,6 +152,13 @@ public class Environment_SocketClient implements IEnvService {
         }
     }
 
+    /**
+     * Stores the values of the InputStream and returns it after
+     * a new-line character was read.
+     *
+     * @return the value of the InputStream until new-line
+     * character as String
+     */
     private String getResponse() {
         int data = -1;
         var line = new StringBuilder();

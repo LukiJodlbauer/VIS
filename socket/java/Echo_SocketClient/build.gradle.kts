@@ -15,9 +15,13 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("at.fhooe.sail.vis.test.EchoClientMain")
+    mainClass.set("at.fhooe.sail.vis.main.EchoClientMain")
 }
+
+var port = "4949"
+var ip   = "127.0.0.1"
 
 tasks.named<JavaExec>("run") {
     standardInput = System.`in`
+    args = listOf(port, ip)
 }
