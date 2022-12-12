@@ -39,9 +39,9 @@ public class Environment_SocketClient implements IEnvService {
     /**
      * Constructor for initializing ip address and port. Once called it automatically starts the connection.
      */
-    public Environment_SocketClient() {
-        mIpAddress = "10.29.19.91";
-        mPort = 4949;
+    public Environment_SocketClient(int _port, String _ipAddress) {
+        mIpAddress = _ipAddress;
+        mPort = _port;
         connect();
     }
 

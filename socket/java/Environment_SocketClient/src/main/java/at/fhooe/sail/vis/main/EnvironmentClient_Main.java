@@ -13,7 +13,10 @@ public class EnvironmentClient_Main {
 	 * @param _argv contains startup parameters
 	 */
 	public static void main(String[] _argv) {
-		IEnvService service = new Environment_SocketClient();
+		int port  = Integer.parseInt(_argv[0]);
+		String ip = _argv[1];
+
+		IEnvService service = new Environment_SocketClient(port, ip);
 		while (true) {
 			String[] sensors = service.requestEnvironmentDataTypes();
 			for (String sensor : sensors) {

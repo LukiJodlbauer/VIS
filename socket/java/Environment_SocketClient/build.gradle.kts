@@ -20,7 +20,7 @@ application {
 }
 
 var port = "4949"
-var ip   = "127.0.0.1"
+var ip   = "10.29.19.91"
 
 tasks.named<JavaExec>("run") {
     args = listOf(port, ip)
