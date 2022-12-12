@@ -82,9 +82,9 @@ int main(int _argc, char **_argv) {
     }
 
     printf("closing connection now ...\n");
-    if(close(connection) < 0){
+    if (close(connection) < 0) {
         perror("close socket failed");
         return -1;
-    };
+    }
     return 0;
 }

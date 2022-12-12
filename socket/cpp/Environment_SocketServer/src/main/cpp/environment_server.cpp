@@ -4,13 +4,7 @@
 
 #include "environment_server.h"
 
-/**
- *
- * @param _port port which should be used
- * @param _buffer_size size of buffer for user input
- * This function start the main socket which accepts the client connections and creates threads for each client
- * Messages are send over TCP via ipv4
- */
+
 void EnvironmentServer::InitializeSocket(int _port, int _buffer_size) {
     int new_socket;
     sockaddr_in serverAddr = {};
@@ -82,26 +76,13 @@ void EnvironmentServer::InitializeSocket(int _port, int _buffer_size) {
     }
 }
 
-/**
- *  Constructor initializes m_server_fd with default value and m_shutdown with false
- */
 EnvironmentServer::EnvironmentServer() {
     m_server_fd = -1;
     m_shutdown = false;
 }
 
-/**
- *  Default Constructor
- */
 EnvironmentServer::~EnvironmentServer() = default;
 
-/**
- *
- * @param _parameter
- * This function handles the client communication
- * Possible client methods: drop(), shutdown(), getSensorTypes(), getAllSensors(), getSensor(_sensor).
- * Every other input will be returned as Echo
- */
 void *EnvironmentServer::ClientCommunication(void *_parameter) {
     //extract information from parameter
     auto *p = (m_socketParam *) _parameter;
@@ -132,7 +113,7 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
         memset(&timestamp[0], 0, sizeof(timestamp));
 
         //timestamp generation
-        const auto longTimestamp = std::chrono::duration_cast<std::chrono::seconds>(
+        const auto longTimestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
                 std::chrono::system_clock::now().time_since_epoch()).count();
         strcpy(timestamp, std::to_string(longTimestamp).c_str());
 
@@ -253,13 +234,6 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
     pthread_cleanup_pop(1);
 }
 
-/**
- *
- * @param _target holds socket and client information
- * This function closes the client socket and deletes the stored client information.
- * This is going to be executed before the the thread is destroyed
- *
- */
 void EnvironmentServer::CleanUp(void *_target) {
     auto *target = (m_socketParam *) _target;
     int clientSocket = target->socket;
@@ -271,9 +245,6 @@ void EnvironmentServer::CleanUp(void *_target) {
     delete target;
 }
 
-/**
- * This function closes the main socket
- */
 void EnvironmentServer::CloseSocket() const {
     if (close(m_server_fd) < 0) {
         char erno_buffer[256];
@@ -282,13 +253,6 @@ void EnvironmentServer::CloseSocket() const {
     }
 }
 
-/**
- *
- * @param amount amount of sensor values to be created
- * @param result char[] in which the values will be stored
- * @param sensor type of sensor; nullptr if it should not be added
- * This function creates the char[](with generates values for the given sensor)which is going to be returned to the client
- */
 void EnvironmentServer::getRandomNumbers(int _amount, char *_result, char _sensor[]) { // NOLINT(readability-convert-member-functions-to-static)
     //random number generator
     std::random_device rd;
@@ -315,18 +279,10 @@ void EnvironmentServer::getRandomNumbers(int _amount, char *_result, char _senso
     }
 }
 
-/**
- *
- * @param con element which should be removed
- * This function removes a connection from all open connections
- */
 void EnvironmentServer::CloseSingleCon(const EnvironmentServer::m_thread_manger con) {
     m_threads.erase(std::remove(m_threads.begin(), m_threads.end(), con), m_threads.end());
 }
 
-/**
- * This function closes all open connections and triggers the shutdown to kill th main socket
- */
 void EnvironmentServer::CloseAllConnections() {
     for(auto & m_thread : m_threads)
     {

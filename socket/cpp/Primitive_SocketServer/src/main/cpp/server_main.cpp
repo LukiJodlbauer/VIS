@@ -1,6 +1,5 @@
-#include <iostream> // cout, cin
-#include <unistd.h> // close
-#include <arpa/inet.h> // inet_ntop/inet_atop
+#include <unistd.h>
+#include <arpa/inet.h>
 #include <regex>
 
 #define BUFFER_SIZE 1024

@@ -23,6 +23,7 @@ int main(int _argc, char **_argv) {
         perror("Not able to obtain port from method parameter");
         return -1;
     }
+
     UdpServer server;
     server.InitializeSocket(port, BUFFER_SIZE);
     server.CloseSocket();

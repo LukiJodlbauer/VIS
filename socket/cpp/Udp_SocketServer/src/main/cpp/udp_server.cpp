@@ -4,14 +4,6 @@
 
 #include "../headers/udp_server.h"
 
-/**
- *
- * @param _port port which should be used
- * @param _buffer_size size of buffer for user input
- * This function start the main socket which accepts the client connections and handles the communication flow
- * Incoming messages are returned as Echo to the client.
- * Messages are sent over UDP via ipv4
-*/
 void UdpServer::InitializeSocket(int _port, int _buffer_size) {
     char buffer[1024] = {0};
     char dest[1024] = "ECHO: ";
@@ -48,36 +40,27 @@ void UdpServer::InitializeSocket(int _port, int _buffer_size) {
         }
         printf("received: %s\n", buffer);
 
-        if (strcmp(buffer, "drop") == 0) {
-            printf("received drop request\n");
-            break;
-        } else if (strcmp(buffer, "shutdown") == 0) {
-            printf("received shutdown request\n");
-            break;
-        }
-
         strncat(dest, buffer, sizeof(dest) - strlen(dest) - 1);
         if(sendto(m_server_fd, dest, strlen(dest), 0, (sockaddr*) &clientAddr, clientAddrLen) < 0 ){
             perror("send failed");
         }
+
+        if (strcmp(buffer, "shutdown") == 0) {
+            printf("received shutdown request\n");
+            break;
+        }
     }
 }
-/**
- * This function closes the main socket
- */
+
 void UdpServer::CloseSocket() const {
     if(close(m_server_fd) < 0){
         perror("close main socket failed");
         exit(EXIT_FAILURE);
     }
 }
-/**
- *  Constructor initializes m_server_fd with default value
- */
+
 UdpServer::UdpServer() {
     m_server_fd = -1;
 }
-/**
- *  Default Constructor
- */
+
 UdpServer::~UdpServer() = default;

@@ -15,6 +15,7 @@ tasks.register("run", Exec::class) {
 
 tasks.register("kill", Exec::class) {
     group = "application"
-    commandLine("sh", "-c", "fuser -k 4949/tcp")
+    commandLine("bash", "-c", "lsof -nti:${port} | xargs kill -9")
 }
 
+tasks["clean"].dependsOn("kill")

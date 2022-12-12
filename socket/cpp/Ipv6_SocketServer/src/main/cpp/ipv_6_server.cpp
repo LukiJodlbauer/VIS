@@ -4,32 +4,19 @@
 
 #include "../headers/ipv_6_server.h"
 
-/**
- *  Constructor initializes m_server_fd with default value
- */
+
 Ipv6Server::Ipv6Server() {
     m_server_fd = -1;
 }
-/**
- *  Default Constructor
- */
+
 Ipv6Server::~Ipv6Server() = default;
 
-/**
- * @param _ip ip address which should be used
- * @param _port port which should be used
- * @param _buffer_size size of buffer for user input
- * @param _backlog number of connections allowed
- * This function start the main socket which accepts the client connections and handles the communication flow
- * Incoming messages are returned as Echo to the client
- * Messages are send over TCP with ipv6
-*/
 void Ipv6Server::InitializeSocket(char *_ip, int _port, int _buffer_size, int _backlog) { // NOLINT(readability-convert-member-functions-to-static)
     char buffer[1024] = {0};
     char dest[1024] = "ECHO: ";
 
-    int server_fd = socket(AF_INET6, SOCK_STREAM, 0);
-    if (server_fd < 0) {
+    m_server_fd = socket(AF_INET6, SOCK_STREAM, 0);
+    if (m_server_fd < 0) {
         perror("socket initialization failed");
         exit(EXIT_FAILURE);
     }
@@ -51,13 +38,13 @@ void Ipv6Server::InitializeSocket(char *_ip, int _port, int _buffer_size, int _b
     }
     printf("successfully converted ipv6 ...\n");
 
-    if (bind(server_fd, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
+    if (bind(m_server_fd, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
         perror("bind method failed");
         exit(EXIT_FAILURE);
     }
     printf("port was bound ...\n");
 
-    if (listen(server_fd, _backlog) < 0) {
+    if (listen(m_server_fd, _backlog) < 0) {
         perror("listen method failed");
         exit(EXIT_FAILURE);
     }
@@ -68,7 +55,7 @@ void Ipv6Server::InitializeSocket(char *_ip, int _port, int _buffer_size, int _b
     bool doShutdown = false;
 
     while(true) {
-        int new_socket = accept(server_fd, (struct sockaddr *) &clientAddr,
+        int new_socket = accept(m_server_fd, (struct sockaddr *) &clientAddr,
                                 (socklen_t *) &clientAddrLen);
         if (new_socket < 0) {
             perror("accept method failed");
@@ -125,9 +112,7 @@ void Ipv6Server::InitializeSocket(char *_ip, int _port, int _buffer_size, int _b
         }
     }
 }
-/**
- * This function closes the main socket
- */
+
 void Ipv6Server::CloseSocket() const {
     if(close(m_server_fd) < 0){
         perror("close main socket failed");
