@@ -14,7 +14,7 @@
 int main(int _argc, char **_argv) {
     setbuf(stdout, nullptr);
     printf("Server ready ...\n");
-    if (_argc < 3) {
+    if (_argc < 2) {
         perror("Not enough Arguments (port[1], ip[2])");
         return -1;
     }

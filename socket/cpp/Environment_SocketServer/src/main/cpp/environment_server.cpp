@@ -1,5 +1,5 @@
 //
-// Created by luki on 05.12.22.
+// Created by Lukas Jodlbauer on 05.12.22.
 //
 
 #include "environment_server.h"
@@ -70,11 +70,15 @@ void EnvironmentServer::InitializeSocket(int _port, int _buffer_size) {
                                   nullptr,
                                   ClientCommunication,
                                   (void *) parameter);
-        if (rVal <= 0) {
+        if (rVal < 0) {
             char erno_buffer[256];
             strerror_r(errno, erno_buffer, 256);
             printf("Error %s", erno_buffer);
         }
+        m_thread_manger thread = {};
+        thread.threadId = threadID;
+        thread.socket = new_socket;
+        m_threads.push_back(thread);
     }
 }
 
@@ -137,7 +141,7 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
         if (ret < 0) {
             char erno_buffer[256];
             strerror_r(errno, erno_buffer, 256);
-            printf("Error %s", erno_buffer);
+            printf("Error at reading message %s", erno_buffer);
             if (send(clientSocket, "Something went wrong\n", strlen("Something went wrong\n"), 0) < 0) {
                 strerror_r(errno, erno_buffer, 256);
                 printf("Error at sending message %s", erno_buffer);
@@ -145,19 +149,25 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
             }
             break;
         }
-        if(ret == 0 || server->m_shutdown){
-            printf("Connection will be closed");
+        if(ret == 0){
+            printf("Client closed connection");
             break;
         }
         printf("received: %s\n", buffer);
 
-        if (strcmp(buffer, "drop") == 0 || strcmp(buffer, "quit") == 0) {
+        if (strcmp(buffer, "drop") == 0) {
+            m_thread_manger thread = {};
+            thread.threadId = pthread_self();
+            thread.socket = clientSocket;
+            server->CloseSingleCon(thread);
             break;
         }
         if (strcmp(buffer, "shutdown") == 0) {
-            server->m_shutdown = true;
-            server->CloseSocket();
-            printf("after close Socket");
+            m_thread_manger thread = {};
+            thread.threadId = pthread_self();
+            thread.socket = clientSocket;
+            server->CloseSingleCon(thread);
+            server->CloseAllConnections();
             break;
         }
 
@@ -231,7 +241,7 @@ void *EnvironmentServer::ClientCommunication(void *_parameter) {
     }
     //destroy thread
     int rVal = pthread_detach(pthread_self());
-    if (rVal <= 0) {
+    if (rVal < 0) {
         char erno_buffer[256];
         strerror_r(errno, erno_buffer, 256);
         printf("Error at detach thread %s", erno_buffer);
@@ -303,4 +313,32 @@ void EnvironmentServer::getRandomNumbers(int _amount, char *_result, char _senso
         strcat(_result, delimiter);
         strncpy(delimiter, ";", sizeof(delimiter));
     }
+}
+
+/**
+ *
+ * @param con element which should be removed
+ * This function removes a connection from all open connections
+ */
+void EnvironmentServer::CloseSingleCon(const EnvironmentServer::m_thread_manger con) {
+    m_threads.erase(std::remove(m_threads.begin(), m_threads.end(), con), m_threads.end());
+}
+
+/**
+ * This function closes all open connections and triggers the shutdown to kill th main socket
+ */
+void EnvironmentServer::CloseAllConnections() {
+    for(auto & m_thread : m_threads)
+    {
+        close(m_thread.socket);
+        int rVal = pthread_detach(pthread_self());
+        if (rVal < 0) {
+            char erno_buffer[256];
+            strerror_r(errno, erno_buffer, 256);
+            printf("Error at detach thread %s", erno_buffer);
+            exit(EXIT_FAILURE);
+        }
+    }
+    m_shutdown = true;
+    CloseSocket();
 }

@@ -16,7 +16,7 @@ int main(int _argc, char **_argv) {
     setbuf(stdout, nullptr);
     printf("starting client ...\n");
 
-    if (_argc < 3) {
+    if (_argc < 2) {
         perror("not enough arguments (port[1], ip[2])");
         return -1;
     }
