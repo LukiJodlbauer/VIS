@@ -40,7 +40,7 @@ public class Environment_SocketClient implements IEnvService {
      * Constructor for initializing ip address and port. Once called it automatically starts the connection.
      */
     public Environment_SocketClient() {
-        mIpAddress = "127.0.0.1";
+        mIpAddress = "10.29.19.91";
         mPort = 4949;
         connect();
     }
@@ -54,7 +54,7 @@ public class Environment_SocketClient implements IEnvService {
 
         try {
             System.out.println("connecting to " + mIpAddress + " on port " + mPort);
-            mSocket = new Socket("127.0.0.1", 4949);
+            mSocket = new Socket(mIpAddress, mPort);
             System.out.println("connected to server");
 
             mOutputStream = mSocket.getOutputStream();
