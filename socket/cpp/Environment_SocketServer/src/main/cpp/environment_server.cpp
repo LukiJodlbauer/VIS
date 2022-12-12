@@ -36,13 +36,12 @@ void EnvironmentServer::InitializeSocket(int _port, int _buffer_size) {
     sockaddr_in clientAddr = {};
     int clientAddrLen = sizeof(sockaddr_in);
     while (!m_shutdown) {
-        if ((new_socket = accept(m_server_fd, (struct sockaddr *) &clientAddr,
-                                 (socklen_t *) &clientAddrLen)) <= 0) {
-            char erno_buffer[256];
-            strerror_r(errno, erno_buffer, 256);
-            printf("Error %s", erno_buffer);
-            exit(EXIT_FAILURE);
+        new_socket = accept(m_server_fd, (struct sockaddr *) &clientAddr,
+                            (socklen_t *) &clientAddrLen);
+        if (new_socket <= 0) {
+            break;
         }
+
         char serverIp[INET_ADDRSTRLEN];
         inet_ntop(AF_INET, (const void *) &serverAddr.sin_addr, serverIp, INET_ADDRSTRLEN);
 
