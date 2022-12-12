@@ -110,11 +110,16 @@ void Ipv6Server::InitializeSocket(char *_ip, int _port, int _buffer_size, int _b
             }
 
             strncat(dest, buffer, sizeof(dest) - strlen(dest) - 1);
-            send(new_socket, dest, strlen(dest), 0);
+            if(send(new_socket, dest, strlen(dest), 0) < 0){
+                perror("send failed");
+            }
         }
 
         printf("closing connection to socket now ...\n");
-        close(new_socket);
+        if(close(new_socket) < 0){
+            perror("close client socket failed");
+            exit(EXIT_FAILURE);
+        }
         if (doShutdown) {
             break;
         }
@@ -124,5 +129,8 @@ void Ipv6Server::InitializeSocket(char *_ip, int _port, int _buffer_size, int _b
  * This function closes the main socket
  */
 void Ipv6Server::CloseSocket() const {
-    close(m_server_fd);
+    if(close(m_server_fd) < 0){
+        perror("close main socket failed");
+        exit(EXIT_FAILURE);
+    }
 }

@@ -88,5 +88,8 @@ void Ipv6Client::ConnectSocket(char *_ip, int _port, int _buffer_size) { // NOLI
 * This function closes the main socket
 */
 void Ipv6Client::CloseSocket() const {
-    close(m_connection);
+    if(close(m_connection) < 0){
+        perror("receive failed");
+        exit(EXIT_FAILURE);
+    }
 }

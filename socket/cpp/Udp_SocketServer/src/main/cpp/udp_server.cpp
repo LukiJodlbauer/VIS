@@ -57,14 +57,19 @@ void UdpServer::InitializeSocket(int _port, int _buffer_size) {
         }
 
         strncat(dest, buffer, sizeof(dest) - strlen(dest) - 1);
-        sendto(m_server_fd, dest, strlen(dest), 0, (sockaddr*) &clientAddr, clientAddrLen);
+        if(sendto(m_server_fd, dest, strlen(dest), 0, (sockaddr*) &clientAddr, clientAddrLen) < 0 ){
+            perror("send failed");
+        }
     }
 }
 /**
  * This function closes the main socket
  */
 void UdpServer::CloseSocket() const {
-    close(m_server_fd);
+    if(close(m_server_fd) < 0){
+        perror("close main socket failed");
+        exit(EXIT_FAILURE);
+    }
 }
 /**
  *  Constructor initializes m_server_fd with default value

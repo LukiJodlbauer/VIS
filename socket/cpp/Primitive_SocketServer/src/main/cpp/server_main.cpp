@@ -102,14 +102,20 @@ int main(int _argc, char **_argv) {
         }
 
         printf("closing connection to socket now ...\n");
-        close(new_socket);
+        if(close(new_socket) < 0){
+            perror("close client socket failed");
+            exit(EXIT_FAILURE);
+        }
         if (doShutdown) {
             break;
         }
     }
 
     printf("shutting down server now ...\n");
-    close(server_fd);
-    shutdown(server_fd, SHUT_RDWR);
+    if(close(server_fd) < 0){
+        perror("close main socket failed");
+        exit(EXIT_FAILURE);
+    }
+    //shutdown(server_fd, SHUT_RDWR);
     return 0;
 }

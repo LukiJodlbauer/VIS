@@ -77,7 +77,10 @@ void UdpClient::ConnectSocket(char *_ip, int _port, int _buffer_size) { // NOLIN
  * This function closes the main socket
  */
 void UdpClient::CloseSocket() const {
-    close(m_connection);
+    if(close(m_connection) < 0){
+        perror("close main socket failed");
+        exit(EXIT_FAILURE);
+    }
 }
 /**
  *  Default Constructor

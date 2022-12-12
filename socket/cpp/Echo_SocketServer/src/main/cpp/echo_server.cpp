@@ -18,7 +18,9 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { /
 
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0) {
-        perror("socket initialization failed");
+        char erno_buffer[ 256 ];
+        strerror_r( errno, erno_buffer, 256 );
+        printf("Error at socket creation %s", erno_buffer);
         exit(EXIT_FAILURE);
     }
     printf("socket was created ...\n");
@@ -29,13 +31,17 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { /
     serverAddr.sin_port = htons(_port);
 
     if (bind(server_fd, (struct sockaddr *) &serverAddr, sizeof(serverAddr)) < 0) {
-        perror("bind method failed");
+        char erno_buffer[ 256 ];
+        strerror_r( errno, erno_buffer, 256 );
+        printf("Error at binding method %s", erno_buffer);
         exit(EXIT_FAILURE);
     }
     printf("port was bound ...\n");
 
     if (listen(server_fd, _backlog) < 0) {
-        perror("listen method failed");
+        char erno_buffer[ 256 ];
+        strerror_r( errno, erno_buffer, 256 );
+        printf("Error at listen method %s", erno_buffer);
         exit(EXIT_FAILURE);
     }
     printf("listening for connections ...\n");
@@ -48,7 +54,9 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { /
         int new_socket = accept(server_fd, (struct sockaddr *) &clientAddr,
                                 (socklen_t *) &clientAddrLen);
         if (new_socket < 0) {
-            perror("accept method failed");
+            char erno_buffer[ 256 ];
+            strerror_r( errno, erno_buffer, 256 );
+            printf("Error at accept method %s", erno_buffer);
             exit(EXIT_FAILURE);
         }
         printf("accepted connection ...\n");
@@ -69,7 +77,9 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { /
 
             long ret = recv(new_socket, buffer, _buffer_size, 0);
             if (ret < 0) {
-                perror("receive failed");
+                char erno_buffer[ 256 ];
+                strerror_r( errno, erno_buffer, 256 );
+                printf("Error at receiving message %s", erno_buffer);
                 break;
             } else if (ret == 0) {
                 printf("connection closed by partner\n");
@@ -87,11 +97,20 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { /
             }
 
             strncat(dest, buffer, sizeof(dest) - strlen(dest) - 1);
-            send(new_socket, dest, strlen(dest), 0);
+            if(send(new_socket, dest, strlen(dest), 0) < 0){
+                char erno_buffer[ 256 ];
+                strerror_r( errno, erno_buffer, 256 );
+                printf("Error at sending message %s", erno_buffer);
+            }
         }
 
         printf("closing connection to socket now ...\n");
-        close(new_socket);
+        if(close(new_socket) < 0){
+            char erno_buffer[ 256 ];
+            strerror_r( errno, erno_buffer, 256 );
+            printf("Error at closing client socket %s", erno_buffer);
+            exit(EXIT_FAILURE);
+        }
         if (doShutdown) {
             break;
         }
@@ -101,7 +120,12 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { /
  * This function closes the main socket
  */
 void EchoServer::CloseSocket() const {
-    close(m_server_fd);
+    if(close(m_server_fd) < 0){
+        char erno_buffer[ 256 ];
+        strerror_r( errno, erno_buffer, 256 );
+        printf("Error at closing main socket %s", erno_buffer);
+        exit(EXIT_FAILURE);
+    }
 }
 
 /**
