@@ -5,6 +5,7 @@ plugins {
 val port: String = "4949"
 
 tasks.register("run", Exec::class) {
+    dependsOn("kill")
     dependsOn("build")         // make sure project has been built
     group = "application"                // set task group
     standardInput = System.`in`       // enable commandline input
