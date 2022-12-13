@@ -7,6 +7,7 @@ val ip:   String = "::1"
 
 tasks.register("run", Exec::class) {
     dependsOn("build")         // make sure project has been built
+    dependsOn("kill");          //kill process
     group = "application"                // set task group
     standardInput = System.`in`       // enable commandline input
     val exeDir: String = "${buildDir}/exe/main/debug/"
