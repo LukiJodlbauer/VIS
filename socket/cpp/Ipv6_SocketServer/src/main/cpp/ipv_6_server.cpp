@@ -63,12 +63,12 @@ void Ipv6Server::InitializeSocket(char *_ip, int _port, int _buffer_size, int _b
         }
         printf("accepted connection ...\n");
 
-        char serverIp[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, (const void *) &serverAddr.sin6_addr, serverIp, INET_ADDRSTRLEN);
+        char serverIp[INET6_ADDRSTRLEN];
+        inet_ntop(AF_INET6, (const void *) &serverAddr.sin6_addr, serverIp, INET6_ADDRSTRLEN);
         int serverPort = ntohs(serverAddr.sin6_port);
 
-        char clientIp[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, (const void *) &clientAddr.sin6_addr, clientIp, INET_ADDRSTRLEN);
+        char clientIp[INET6_ADDRSTRLEN];
+        inet_ntop(AF_INET6, (const void *) &clientAddr.sin6_addr, clientIp, INET6_ADDRSTRLEN);
         int clientPort = ntohs(clientAddr.sin6_port);
 
         printf("connection established with socket\n");
