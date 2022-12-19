@@ -2,6 +2,8 @@ package at.fhooe.sail.vis.main;
 
 import at.fhooe.sail.vis.socket.Environment_SocketClient;
 
+import java.rmi.RemoteException;
+
 /**
  * Basic Class for testing our C++ EnvironmentServer
  */
@@ -12,7 +14,7 @@ public class EnvironmentClient_Main {
 	 *
 	 * @param _argv contains startup parameters
 	 */
-	public static void main(String[] _argv) {
+	public static void main(String[] _argv) throws RemoteException {
 		int port  = Integer.parseInt(_argv[0]);
 		String ip = _argv[1];
 
