@@ -1,5 +1,6 @@
 package at.fhooe.sail.vis.main;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Arrays;
  * of our C++ Environment-Server.
  * Implements IEnvService interface.
  */
-public class EnvData {
+public class EnvData implements Serializable {
 	/**
 	 * Name of the Sensor.
 	 */
