@@ -69,4 +69,25 @@ public class EnvData implements Serializable {
 	public void setValues(int[] _values) {
 		this.mValues = _values;
 	}
+
+	/**
+	 * Get the value of variable mSensorName.
+	 */
+	public String getSensorName() {
+		return mSensorName;
+	}
+
+	/**
+	 * Get the value of variable mTimestamp.
+	 */
+	public long getTimestamp() {
+		return mTimestamp;
+	}
+
+	/**
+	 * Get the value of variable mValues.
+	 */
+	public int[] getValues() {
+		return mValues;
+	}
 }

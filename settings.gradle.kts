@@ -1,6 +1,10 @@
 rootProject.name = "VIS"
 include(
     ":general:EnvironmentI",
+    ":servlet:Hello_Servlet",
+    ":servlet:Info_Servlet",
+    ":servlet:Session_Servlet",
+    ":servlet:EnvironmentService_Servlet",
     ":socket:java:HelloWorld",
     ":socket:java:Echo_SocketServer",
     ":socket:java:Echo_SocketClient",
