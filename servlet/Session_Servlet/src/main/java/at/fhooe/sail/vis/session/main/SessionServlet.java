@@ -7,11 +7,26 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.*;
 
+/**
+ * Session-Servlet that keeps track of the sessions and shows based on
+ * that different magic-numbers.
+ */
 @WebServlet(
 		name = "SessionServlet",
 		urlPatterns = {"/session"}
 )
 public class SessionServlet extends HttpServlet {
+
+	/**
+	 * Checks if session is already existing. If so it gets the last magic-number
+	 * and displays it. It always generates a new one and stores the last one in
+	 * the session storage.
+	 *
+	 * @param _request an {@link HttpServletRequest} object that contains the request the client has made of the servlet
+	 * @param _response an {@link HttpServletResponse} object that contains the response the servlet sends to the client
+	 *
+	 * @throws IOException
+	 */
 	public void doGet(HttpServletRequest _request, HttpServletResponse _response)
 			throws IOException {
 		boolean didAlreadyVisit = true;

@@ -7,11 +7,23 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.*;
 
+/**
+ * Information Servlet that shows different attributes of the connection.
+ */
 @WebServlet(
 		name = "InfoServlet",
 		urlPatterns = {"/info"}
 )
 public class InfoServlet extends HttpServlet {
+
+	/**
+	 * Prints Ip, BrowserType, MimeTypes, ClientProtocol, Port and ServerName.
+	 *
+	 * @param _request an {@link HttpServletRequest} object that contains the request the client has made of the servlet
+	 * @param _response an {@link HttpServletResponse} object that contains the response the servlet sends to the client
+	 *
+	 * @throws IOException
+	 */
 	public void doGet(HttpServletRequest _request, HttpServletResponse _response)
 			throws IOException {
 		String ip = _request.getRemoteAddr();

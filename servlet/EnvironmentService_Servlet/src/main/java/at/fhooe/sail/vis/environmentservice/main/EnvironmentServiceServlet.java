@@ -12,11 +12,25 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+/**
+ * Displays the data of the different servers in a table on a web page.
+ * Every attached server is displayed through an own table, which contains
+ * the current environment values of the server.
+ */
 @WebServlet(
 		name = "EnvironmentServiceServlet",
 		urlPatterns = {"/environment"}
 )
 public class EnvironmentServiceServlet extends HttpServlet {
+
+	/**
+	 * Prints basic table which shows the C++ and RMI Environment-Server data.
+	 *
+	 * @param _request an {@link HttpServletRequest} object that contains the request the client has made of the servlet
+	 * @param _response an {@link HttpServletResponse} object that contains the response the servlet sends to the client
+	 *
+	 * @throws IOException
+	 */
 	public void doGet(HttpServletRequest _request, HttpServletResponse _response)
 			throws IOException {
 		_response.setContentType("text/html");
@@ -53,6 +67,12 @@ public class EnvironmentServiceServlet extends HttpServlet {
 		out.println("</html>");
 	}
 
+	/**
+	 * Prints table that shows environment-data.
+	 *
+	 * @param out
+	 * @param list
+	 */
 	private static void printTable(PrintWriter out, EnvData[] list) {
 		out.println("<table>");
 		out.println("<thead>");
@@ -78,32 +98,4 @@ public class EnvironmentServiceServlet extends HttpServlet {
 		out.println("</tbody>");
 		out.println("</table>");
 	}
-	/*
-
-	int port  = Integer.parseInt(_argv[0]);
-		String ip = _argv[1];
-
-		IEnvService service = new Environment_SocketClient(port, ip);
-		while (true) {
-			String[] sensors = service.requestEnvironmentDataTypes();
-			for (String sensor : sensors) {
-				EnvData dataO = service.requestEnvironmentData(sensor);
-				System.out.print(dataO);
-				System.out.println();
-				System.out.println("*****************************");
-			}
-			System.out.println();
-			System.out.println();
-			EnvData[] dataOs = service.requestAll();
-			for (EnvData dataO : dataOs) {
-				System.out.println(dataO);
-			}
-			try {
-				Thread.sleep(1000);
-			} catch (Exception _e) {
-				_e.printStackTrace();
-			}
-		}
-
-	 */
 }
