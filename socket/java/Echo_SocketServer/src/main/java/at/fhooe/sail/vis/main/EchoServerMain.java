@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Basic EchoServer-Class for testing Client and Server Communication.
+ * Basic HttpServer-Class for testing Client and Server Communication.
  */
 public class EchoServerMain {
 	/**

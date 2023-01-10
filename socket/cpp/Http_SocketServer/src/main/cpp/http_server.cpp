@@ -2,12 +2,16 @@
 // Created by Nico Oliver on 05.12.22.
 //
 
-#include "echo_server.h"
+#include "http_server.h"
+#include "../headers/http_server.h"
 
-void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { // NOLINT(readability-convert-member-functions-to-static)
-    char buffer[1024] = {0};
-    char dest[1024] = "ECHO: ";
+#include <sstream>
 
+#define BUFFER_SIZE 1024
+
+using namespace std;
+
+void HttpServer::InitializeSocket(int _port, int _backlog) {
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0) {
         char erno_buffer[ 256 ];
@@ -40,7 +44,6 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { /
 
     sockaddr_in clientAddr = {};
     int clientAddrLen = sizeof(sockaddr_in);
-    bool doShutdown = false;
 
     while(true) {
         int new_socket = accept(server_fd, (struct sockaddr *) &clientAddr,
@@ -63,53 +66,61 @@ void EchoServer::InitializeSocket(int _port, int _buffer_size, int _backlog) { /
 
         printf("connection established with socket\n");
         printf("[client (%s, %i); server (%s, %i)]\n", clientIp, clientPort, serverIp, serverPort);
-        while(true) {
-            memset(&buffer[0], 0, sizeof(buffer));
-            memset(&dest[6], 0, sizeof(dest)-6);
 
-            long ret = recv(new_socket, buffer, _buffer_size, 0);
-            if (ret < 0) {
-                char erno_buffer[ 256 ];
-                strerror_r( errno, erno_buffer, 256 );
-                printf("Error at receiving message %s", erno_buffer);
-                break;
-            } else if (ret == 0) {
-                printf("connection closed by partner\n");
-                break;
-            }
-            printf("received: %s\n", buffer);
+        char msg[BUFFER_SIZE] = {0};
+        int code = recv(new_socket, msg, BUFFER_SIZE, 0);
+        if (code < 0) {
+            perror("error receiving _msg");
+            exit(EXIT_FAILURE);
+        }
+        cout << "received msg: " << msg;
+        string msg_string(msg);
 
-            if (strcmp(buffer, "drop") == 0) {
-                printf("received drop request\n");
-                break;
-            } else if (strcmp(buffer, "shutdown") == 0) {
-                printf("received shutdown request\n");
-                doShutdown = true;
-                break;
-            }
+        ReplaceAll(msg_string, "\r\n", "<br>");
 
-            strncat(dest, buffer, sizeof(dest) - strlen(dest) - 1);
-            if(send(new_socket, dest, strlen(dest), 0) < 0){
-                char erno_buffer[ 256 ];
-                strerror_r( errno, erno_buffer, 256 );
-                printf("Error at sending message %s", erno_buffer);
-            }
+        stringstream html_stream;
+        html_stream << "<html>"
+            << "<head>"
+            << "<title>HTTP-ECHO</title>"
+            << "</head>"
+            << "<body>"
+            << "<h1>"
+            << "Browser Request"
+            << "</h1>"
+            << "<p>"
+            << msg_string
+            << "</p>"
+            << "</body>"
+            << "</html>";
+
+        string html_string = html_stream.str();
+        cout << "html-string: " << html_string << endl;
+
+        stringstream request_stream;
+        request_stream << "HTTP/1.1 200 OK \r\n"
+           << "Content-Type: text/html \r\n"
+           << "Content-Length: " << html_string.length() << " \r\n"
+           << "\r\n"
+           << html_string;
+
+        string request = request_stream.str();
+
+        cout << "Request: " << request << endl;
+
+        char ret[request.length()+1];
+        strcpy(ret, request.c_str());
+
+        if (send(new_socket, ret, request.length() + 1, 0) < 0) {
+            perror("error sending message");
+            exit(EXIT_FAILURE);
         }
 
         printf("closing connection to socket now ...\n");
-        if(close(new_socket) < 0){
-            char erno_buffer[ 256 ];
-            strerror_r( errno, erno_buffer, 256 );
-            printf("Error at closing client socket %s", erno_buffer);
-            exit(EXIT_FAILURE);
-        }
-        if (doShutdown) {
-            break;
-        }
+        close(new_socket);
     }
 }
 
-void EchoServer::CloseSocket() const {
+void HttpServer::CloseSocket() const {
     if(close(m_server_fd) < 0){
         char erno_buffer[ 256 ];
         strerror_r( errno, erno_buffer, 256 );
@@ -118,8 +129,19 @@ void EchoServer::CloseSocket() const {
     }
 }
 
-EchoServer::EchoServer() {
+HttpServer::HttpServer() {
     m_server_fd = -1;
 }
 
-EchoServer::~EchoServer() = default;
+void HttpServer::ReplaceAll(string& str, const string& from, const string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+}
+
+
+HttpServer::~HttpServer() = default;

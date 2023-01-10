@@ -17,7 +17,7 @@
  * Basic Echo-Server. Holds functionality to start server socket
  * and close it.
  */
-class EchoServer {
+class HttpServer {
 public:
     /**
      * Stores descriptor referencing the main socket
@@ -27,12 +27,12 @@ public:
     /**
      *  Constructor initializes m_server_fd with default value
      */
-    EchoServer();
+    HttpServer();
 
     /**
      *  Default Destructor
      */
-    ~EchoServer();
+    ~HttpServer();
 
     /**
      *
@@ -49,6 +49,10 @@ public:
      * This function closes the main socket
      */
     void CloseSocket() const;
+
+    void ReplaceAll(std::string &str, const std::string &from, const std::string &to);
+
+    void InitializeSocket(int _port, int _backlog);
 };
 
 

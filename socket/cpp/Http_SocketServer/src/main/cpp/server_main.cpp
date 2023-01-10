@@ -26,7 +26,7 @@ int main(int _argc, char **_argv) {
     }
 
     HttpServer server;
-    server.InitializeSocket(port, BUFFER_SIZE, BACKLOG);
+    server.InitializeSocket(port, BACKLOG);
     server.CloseSocket();
 
     return 0;
