@@ -1,19 +1,31 @@
 package at.fhooe.sail.vis.main;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
+/**
+ * Main server class for RMI Client Server connection for sensor datas
+ */
 public class RmiServer_Main extends UnicastRemoteObject implements IEnvService{
     Map<String, Integer> _sensors  = new HashMap<String, Integer>() {{
         put("ligth", 1);
         put("air", 3);
         put("noise",1);
-    }};    public RmiServer_Main() throws RemoteException { super(); }
+    }};
 
+    /**
+     *
+     * @throws RemoteException
+     */
+    public RmiServer_Main() throws RemoteException { super(); }
+
+    /**
+     * Main method that creates the registry and waits for requests
+     * @param args
+     */
     public static void main(String[] args) {
         try {
             RmiServer_Main rmi = new RmiServer_Main();
@@ -23,8 +35,8 @@ public class RmiServer_Main extends UnicastRemoteObject implements IEnvService{
 
             System.out.println("Server is waiting for queries ...");
             System.out.println("PID"+ProcessHandle.current().pid());
-            Thread unbindHook = new Thread(() -> System.out.println("Test"));
-            Runtime.getRuntime().addShutdownHook(unbindHook);
+            //Thread unbindHook = new Thread(() -> System.out.println("Test"));
+            //Runtime.getRuntime().addShutdownHook(unbindHook);
         } catch (Exception _e) { _e.printStackTrace(); }
     }
 
@@ -98,6 +110,11 @@ public class RmiServer_Main extends UnicastRemoteObject implements IEnvService{
         return results.toArray(new EnvData[0]);
     }
 
+    /**
+     * Method that generates random values for sensors
+     * @param amount amount of numbers to generate
+     * @return array of generated values
+     */
    private int[] generateRandomValues(int amount){
        Random rand = new Random();
        List<Integer> values = new LinkedList<>();

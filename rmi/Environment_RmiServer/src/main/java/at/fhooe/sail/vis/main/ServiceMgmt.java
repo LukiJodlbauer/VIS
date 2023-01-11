@@ -47,7 +47,6 @@ public class ServiceMgmt {
                             if(!UnicastRemoteObject.unexportObject(rmi, true)){
                                 System.out.println("Something went wrong at unexportObject method");
                             }
-
                         } catch (NotBoundException e) {
                             System.out.println("RMI Server not started");
                         }
@@ -66,7 +65,6 @@ public class ServiceMgmt {
                     throw new RuntimeException(e);
                 }
             }
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
