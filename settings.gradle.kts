@@ -2,7 +2,9 @@ rootProject.name = "VIS"
 include(
     ":general:EnvironmentI",
     ":jaxb:BruteForce",
+    ":jaxb:JSON",
     ":jaxb:Parser",
+    ":jaxb:XML",
     ":servlet:Hello_Servlet",
     ":servlet:Info_Servlet",
     ":servlet:Session_Servlet",

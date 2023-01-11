@@ -6,8 +6,8 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.StringReader;
 
 public class Wind {
-    private double speed;
-    private int deg;
+    private double mSpeed;
+    private int mDeg;
 
     public Wind(String xml) {
         try {
@@ -18,9 +18,9 @@ public class Wind {
                 int event = reader.next();
                 if (event == XMLStreamConstants.START_ELEMENT) {
                     if (reader.getLocalName().equals("speed")) {
-                        speed = Double.parseDouble(reader.getElementText());
+                        mSpeed = Double.parseDouble(reader.getElementText());
                     } else if (reader.getLocalName().equals("deg")) {
-                        deg = Integer.parseInt(reader.getElementText());
+                        mDeg = Integer.parseInt(reader.getElementText());
                     }
                 }
             }
@@ -32,8 +32,8 @@ public class Wind {
     @Override
     public String toString() {
         return "Wind{" +
-                "speed=" + speed +
-                ", deg=" + deg +
+                "speed=" + mSpeed +
+                ", deg=" + mDeg +
                 '}';
     }
 }
