@@ -40,7 +40,9 @@ public class RmiClient_Main {
                 }
             }
             //System.out.println("The server date is: " + date);
-        } catch (NotBoundException | RemoteException | NullPointerException _e) {_e.printStackTrace();}
+        } catch (NotBoundException | RemoteException | NullPointerException _e) {
+            System.out.print("Connection is closed");
+        }
 
     }
 }
