@@ -1,9 +1,19 @@
 package at.fhooe.sail.vis.main;
 
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+/**
+ * RMI Client class for Client-Server Connection Sensor data
+ */
 public class RmiClient_Main {
+    /**
+     * Main method that connects to the registry and request data periodically
+     * @param args
+     */
     public static void main(String[] args) {
         try {
             String adr = "RmiServer";
@@ -30,6 +40,7 @@ public class RmiClient_Main {
                 }
             }
             //System.out.println("The server date is: " + date);
-        } catch (Exception _e) {_e.printStackTrace();}
+        } catch (NotBoundException | RemoteException | NullPointerException _e) {_e.printStackTrace();}
+
     }
 }

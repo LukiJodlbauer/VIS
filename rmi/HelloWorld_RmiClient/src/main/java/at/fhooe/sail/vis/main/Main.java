@@ -4,7 +4,15 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Date;
 
+/**
+ * Basic RMI Client-Class for testing Client and Server Communication.
+ */
 public class Main {
+    /**
+     *
+     * @param _args
+     * Main entry point that starts the RMI Connection and calls the saySomething method
+     */
     public static void main(String[] _args) {
         try {
             String adr = "Main";
