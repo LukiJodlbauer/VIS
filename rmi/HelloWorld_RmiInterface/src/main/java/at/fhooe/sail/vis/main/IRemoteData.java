@@ -9,9 +9,9 @@ import java.rmi.RemoteException;
 public interface IRemoteData extends Remote {
 
     /**
-     *
+     * Dummy-output
      * @throws RemoteException
      */
-    public void saySomething() throws RemoteException;
+    void saySomething() throws RemoteException;
 }
 

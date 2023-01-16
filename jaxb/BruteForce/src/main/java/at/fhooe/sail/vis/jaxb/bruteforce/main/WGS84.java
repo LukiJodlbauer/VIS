@@ -5,15 +5,14 @@ public class WGS84 {
     private double mLongitude;
 
     public WGS84(String xml) {
-        int latStart = xml.indexOf("<latitude>") + "<latitude>".length();
-        int latEnd = xml.indexOf("</latitude>");
-        String latString = xml.substring(latStart, latEnd);
-        mLatitude = Double.parseDouble(latString);
+        mLatitude = Double.parseDouble(getContentOfTag(xml, "latitude"));
+        mLongitude = Double.parseDouble(getContentOfTag(xml, "longitude"));
+    }
 
-        int lonStart = xml.indexOf("<longitude>") + "<longitude>".length();
-        int lonEnd = xml.indexOf("</longitude>");
-        String lonString = xml.substring(lonStart, lonEnd);
-        mLongitude = Double.parseDouble(lonString);
+    private String getContentOfTag(String xml, String tag) {
+        int start = xml.indexOf(String.format("<%s>", tag)) + String.format("<%s>", tag).length();
+        int end = xml.indexOf(String.format("</%s>", tag));
+        return xml.substring(start, end);
     }
 
     @Override

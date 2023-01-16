@@ -10,6 +10,9 @@ import java.util.*;
  * Main server class for RMI Client Server connection for sensor datas
  */
 public class RmiServer_Main extends UnicastRemoteObject implements IEnvService{
+    /**
+     * Sensor values
+     */
     Map<String, Integer> _sensors  = new HashMap<String, Integer>() {{
         put("ligth", 1);
         put("air", 3);
@@ -17,7 +20,7 @@ public class RmiServer_Main extends UnicastRemoteObject implements IEnvService{
     }};
 
     /**
-     *
+     * Default constructor
      * @throws RemoteException
      */
     public RmiServer_Main() throws RemoteException { super(); }

@@ -1,5 +1,8 @@
 package at.fhooe.sail.vis.main;
 
+/**
+ * HelloWorld-RMI Project
+ */
 public class Main {
     /**
      * Main entry point of application (unused)

@@ -6,7 +6,16 @@ import at.fhooe.sail.vis.main.IEnvService;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+/**
+ * RmiClient class
+ */
 public class RmiClient {
+
+    /**
+     * Gets EnvData from RMI Server
+     * @return EnvData Array
+     * @throws Exception
+     */
     public static EnvData[] getEnvData() throws Exception {
         String adr = "RmiServer";
         Registry reg = LocateRegistry.getRegistry();

@@ -1,20 +1,25 @@
 package at.fhooe.sail.vis.main;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
+/**
+ * RMI Servermanager
+ */
 public class ServiceMgmt {
+    /**
+     * Registry
+     */
     private static final String _registry = "RmiServer";
+
+    /**
+     * Entrypoint of Application. Waiting for commands.
+     * @param args
+     */
     public static void main(String[] args) {
 
         System.out.println("Menü\n");

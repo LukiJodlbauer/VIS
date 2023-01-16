@@ -10,7 +10,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class Main extends UnicastRemoteObject implements IRemoteData{
     /**
-     *
+     * Default constructor
      * @throws RemoteException
      */
     public Main() throws RemoteException { super(); }
