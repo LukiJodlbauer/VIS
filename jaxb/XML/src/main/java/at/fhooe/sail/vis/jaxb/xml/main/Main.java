@@ -18,7 +18,7 @@ public class Main {
 
 	/**
 	 * Entry point of application
-	 *
+	 * Creates new pet object, parse this object to json and back to a pet object
 	 * @param _argv contains startup parameters
 	 */
 	public static void main(String[] _argv) {
