@@ -5,12 +5,15 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
-
+/**
+ * Simple Exception Controller for displaying error messages
+ */
 public class SimpleExceptionController implements ExceptionMapper<Throwable> {
-    @Context
-    private UriInfo uriInfo;
-    @Context
-    private HttpServletRequest mRequest;
+    /**
+     * Simple method that show the thrown error as an html page
+     * @param _e the exception to map to a response.
+     * @return  an response that represents the error
+     */
     @Override
     public Response toResponse(Throwable _e) {
         String bob = "<!DOCTYPE html> \n" +

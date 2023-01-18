@@ -1,7 +1,6 @@
 plugins {
     id("java")
     application
-    war
 }
 
 group = "at.fhooe.sail.vis.main"
@@ -31,26 +30,4 @@ application {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
-}
-val nameWar: String = "EnvironmenResttClient"
-
-tasks.war {
-    destinationDirectory.set(file("./webapp"))
-    archiveBaseName.set(nameWar)
-// from("webapp/index.html") // remove for "landing" page
-    doLast {
-        copy {
-            println("*** copying war to root webapp folder ... ")
-            val fromS: String = "${project.projectDir.absolutePath}\\webapp\\$nameWar.war"
-            val intoS: String = "${rootProject.projectDir.absolutePath}\\webapps"
-            from(fromS)
-            into(intoS)
-        }
-    }
-}
-tasks.clean {
-    val fN_a: String = "${project.projectDir.absolutePath}\\webapp\\$nameWar.war"
-    val fN_b: String = "${rootProject.projectDir.absolutePath}\\webapps\\$nameWar.war"
-    delete(files(fN_a))
-    delete(files(fN_b))
 }

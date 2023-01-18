@@ -11,10 +11,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Data Branch endpoints
+ */
 @Path("/data")
-
 public class DataBranch {
-
+    /**
+     * This methods return the requested sensor in the requested format
+     * @param sensor requested sensor
+     * @param output requested format either JSON or XML
+     * @return the requested sensor
+     */
     @GET
     @Path("{sensor}")
     @Produces({MediaType.TEXT_XML,MediaType.APPLICATION_JSON})
@@ -35,7 +42,11 @@ public class DataBranch {
         bob.entity(result);
         return bob.build();
     }
-
+    /**
+     * This methods return all available sensor in the requested format
+     * @param output requested format either JSON or XML
+     * @return the all available sensor
+     */
     @GET
     @Path("/ALL")
     @Produces({MediaType.TEXT_XML,MediaType.APPLICATION_JSON})
@@ -62,6 +73,11 @@ public class DataBranch {
         return bob.build();
     }
 
+    /**
+     * This method generates dummy sensor values
+     * @param amount amount of values to generate
+     * @return generated value
+     */
     private int[] generateRandomValues(int amount){
         Random rand = new Random();
         List<Integer> values = new LinkedList<>();
@@ -72,13 +88,25 @@ public class DataBranch {
     }
 }
 
+/**
+ * Helper Class for JAXB
+ */
 @XmlRootElement(name="sensorDataList")
 class SensorDatas{
+    /**
+     * List of all available sensors
+     */
     @XmlElement(name = "sensor")
     public List<EnvData> sensors = new ArrayList<>();
 
+    /**
+     * Empty constructor for JAXB
+     */
     public SensorDatas(){}
-
+    /**
+     * Converts object to string representation
+     * @return String representation of object
+     */
     @Override
     public String toString() {
         return "SensorDatas{" +
