@@ -11,6 +11,8 @@ repositories {
 dependencies {
     // This dependency is used by the application.
     implementation("com.google.guava:guava:31.0.1-jre")
+    implementation("org.glassfish.jaxb:jaxb-runtime:4.0.0")
+
 }
 
 application {

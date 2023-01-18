@@ -26,7 +26,10 @@ include(
     ":socket:cpp:Udp_SocketClient",
     ":socket:cpp:Ipv6_SocketServer",
     ":socket:cpp:Ipv6_SocketClient",
-    ":socket:cpp:Environment_SocketServer")
+    ":socket:cpp:Environment_SocketServer",
+    ":rest:Hello_RestServer",
+    ":rest:Environment_RestServer",
+    ":rest:Environment_RestClient")
 include("rmi:HelloWorld_RmiInterface")
 findProject(":rmi:HelloWorld_RmiInterface")?.name = "HelloWorld_RmiInterface"
 include("rmi:HelloWorld_RmiServer")

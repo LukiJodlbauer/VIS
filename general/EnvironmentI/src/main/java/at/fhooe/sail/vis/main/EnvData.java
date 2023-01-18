@@ -1,5 +1,7 @@
 package at.fhooe.sail.vis.main;
 
+import jakarta.xml.bind.annotation.*;
+
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -8,20 +10,26 @@ import java.util.Arrays;
  * of our C++ Environment-Server.
  * Implements IEnvService interface.
  */
+@XmlRootElement(name = "sensorData")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class EnvData implements Serializable {
 	/**
 	 * Name of the Sensor.
 	 */
+	@XmlElement(name="sensorName")
 	private String  mSensorName;
 
 	/**
 	 * Timestamp of when the Sensor sent the data.
 	 */
+	@XmlElement(name="timestamp")
 	private long    mTimestamp;
 
 	/**
 	 * Values of the Sensor at the time of mTimestamp.
 	 */
+	@XmlElementWrapper(name = "values")
+	@XmlElement(name = "value")
 	private int[]   mValues;
 
 	/**
