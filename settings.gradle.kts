@@ -1,6 +1,9 @@
 rootProject.name = "VIS"
 include(
     ":general:EnvironmentI",
+    ":soap:dynamic:Environment_SoapServer",
+    ":soap:dynamic:Environment_SoapClient",
+    ":soap:static:Environment_SoapClientStatic",
     ":soap:dynamic:Hello_SoapServer",
     ":soap:dynamic:Hello_SoapClient",
     ":soap:static:Hello_SoapServer",
