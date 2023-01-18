@@ -10,6 +10,7 @@ dependencies {
     // https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api
     implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
     implementation(project(":general:EnvironmentI"))
+    implementation(project(":soap:dynamic:Environment_SoapClient"))
 }
 
 val nameWar: String = "EnvironmentServiceServlet"

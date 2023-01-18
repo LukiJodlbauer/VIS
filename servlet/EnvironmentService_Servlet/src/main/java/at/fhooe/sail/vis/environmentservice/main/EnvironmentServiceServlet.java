@@ -3,6 +3,7 @@ package at.fhooe.sail.vis.environmentservice.main;
 import at.fhooe.sail.vis.environmentservice.rmi.RmiClient;
 import at.fhooe.sail.vis.environmentservice.socket.Environment_SocketClient;
 import at.fhooe.sail.vis.main.EnvData;
+import at.fhooe.sail.vis.soap.dynamic.environment.Environment_SoapClient;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +60,16 @@ public class EnvironmentServiceServlet extends HttpServlet {
 			var rmiData = RmiClient.getEnvData();
 
 			printTable(out, rmiData);
+		} catch (Exception _e) {
+			out.println("<p>Server offline!</p>");
+		}
+
+		out.println("<h1>SOAP Server Environment Data</h1>");
+		try {
+			var soapClient = new Environment_SoapClient();
+			var soapData = soapClient.mSOAP.requestAll();
+
+			printTable(out, soapData);
 		} catch (Exception _e) {
 			out.println("<p>Server offline!</p>");
 		}

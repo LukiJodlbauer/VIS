@@ -1,11 +1,14 @@
 package at.fhooe.sail.vis.main;
 
+import jakarta.jws.WebService;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
  * Basic interface for testing our EnvironmentClient and -Server.
  */
+@WebService
 public interface IEnvService extends Remote {
 	/**
 	 * Requests the sensor types of our environment server.

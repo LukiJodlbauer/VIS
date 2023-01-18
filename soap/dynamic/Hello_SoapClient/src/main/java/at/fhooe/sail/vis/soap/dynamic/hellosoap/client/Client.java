@@ -7,9 +7,19 @@ import javax.xml.namespace.QName;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Client for testing dynamic SOAP-Server
+ */
 public class Client {
+    /**
+     * SimpleInterface for getting DummyData
+     */
     ISimpleInterface mSOAP;
 
+    /**
+     * Creates service and sets mSOAP variable
+     * @throws MalformedURLException
+     */
     public Client() throws MalformedURLException {
         Service service = Service.create(
                 new URL("http://localhost:8080/Hello_SoapServer?wsdl"),
