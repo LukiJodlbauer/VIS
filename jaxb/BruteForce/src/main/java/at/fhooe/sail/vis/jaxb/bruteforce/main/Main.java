@@ -7,7 +7,7 @@ public class Main {
 
 	/**
 	 * Entry point of application
-	 *
+	 * Try to parse xml string with brute force
 	 * @param _argv contains startup parameters
 	 */
 	public static void main(String[] _argv) {

@@ -7,7 +7,7 @@ public class Main {
 
 	/**
 	 * Entry point of application
-	 *
+	 * Parsing xml string to wind object
 	 * @param _argv contains startup parameters
 	 */
 	public static void main(String[] _argv) {
