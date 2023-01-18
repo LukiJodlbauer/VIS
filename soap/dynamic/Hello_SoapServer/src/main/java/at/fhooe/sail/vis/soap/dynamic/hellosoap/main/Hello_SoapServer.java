@@ -3,6 +3,9 @@ package at.fhooe.sail.vis.soap.dynamic.hellosoap.main;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebService;
 
+/**
+ * Dynamic SOAP-Server implementing ISimpleInterface
+ */
 @WebService(endpointInterface =
         "at.fhooe.sail.vis.soap.dynamic.hellosoap.main.ISimpleInterface")
 public class Hello_SoapServer implements ISimpleInterface {

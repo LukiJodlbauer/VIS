@@ -18,17 +18,33 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Environment SOAP-Server
+ */
 @WebService(endpointInterface =
         "at.fhooe.sail.vis.main.IEnvService")
 public class Environment_SoapServer implements IEnvService {
+    /**
+     * Weather API Url
+     */
     private static final String _WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather?q={type}&units=metric&APPID=86adbae393bbc32a60da344d9629bf35";
 
+    /**
+     * @return available cities
+     * @throws RemoteException
+     */
     @WebMethod
     @Override
     public String[] requestEnvironmentDataTypes() throws RemoteException {
         return new String[] {"Wien,at", "Muenchen,de", "Hamburg,de"};
     }
 
+    /**
+     * @param _type the city for which the data should
+     *              be requested
+     * @return EnvData object
+     * @throws RemoteException
+     */
     @Override
     public EnvData requestEnvironmentData(String _type) throws RemoteException {
         EnvData result = new EnvData();
@@ -64,6 +80,10 @@ public class Environment_SoapServer implements IEnvService {
         return result;
     }
 
+    /**
+     * @return EnvData-Array of all available cities.
+     * @throws RemoteException
+     */
     @Override
     public EnvData[] requestAll() throws RemoteException {
         var result = new ArrayList<EnvData>();

@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.util.stream.Collectors;
 
 /**
- * SOAP dynamic project.
+ * SOAP static project for testing environment functionality
  */
 public class Main {
 

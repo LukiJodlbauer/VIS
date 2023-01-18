@@ -2,7 +2,6 @@ package at.fhooe.sail.vis.soap.sstatic.hellosoap.soapclient;
 
 import at.fhooe.sail.vis.soap.generated.HelloSoapServer;
 import at.fhooe.sail.vis.soap.generated.HelloSoapServerService;
-import jakarta.xml.ws.Endpoint;
 
 /**
  * SOAP dynamic project.
