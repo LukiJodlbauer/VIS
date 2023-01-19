@@ -3,6 +3,7 @@ package at.fhooe.sail.vis.environmentservice.main;
 import at.fhooe.sail.vis.environmentservice.rmi.RmiClient;
 import at.fhooe.sail.vis.environmentservice.socket.Environment_SocketClient;
 import at.fhooe.sail.vis.main.EnvData;
+import at.fhooe.sail.vis.main.EnvironmentRestClient;
 import at.fhooe.sail.vis.soap.dynamic.environment.Environment_SoapClient;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -74,6 +75,23 @@ public class EnvironmentServiceServlet extends HttpServlet {
 			out.println("<p>Server offline!</p>");
 		}
 
+		out.println("<h1>REST Server Environment Data</h1>");
+		try {
+			var restClient = new EnvironmentRestClient();
+			var restData = restClient.requestAll();
+
+			printTable(out, restData);
+		} catch (Exception _e) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			_e.printStackTrace(pw);
+			String sStackTrace = sw.toString();
+
+			out.println("<p>Server offline!</p>");
+			out.println("<p>" + _e.getMessage() + "</p>");
+			out.println("<p>" + sStackTrace + "</p>");
+		}
+
 		out.println("</body>");
 		out.println("</html>");
 	}
@@ -81,8 +99,8 @@ public class EnvironmentServiceServlet extends HttpServlet {
 	/**
 	 * Prints table that shows environment-data.
 	 *
-	 * @param out
-	 * @param list
+	 * @param out reference to PrintWriter
+	 * @param list List of EnvData-objects
 	 */
 	private static void printTable(PrintWriter out, EnvData[] list) {
 		out.println("<table>");

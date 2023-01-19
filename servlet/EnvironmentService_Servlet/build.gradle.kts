@@ -11,6 +11,7 @@ dependencies {
     implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
     implementation(project(":general:EnvironmentI"))
     implementation(project(":soap:dynamic:Environment_SoapClient"))
+    implementation(project(":rest:Environment_RestClient"))
 }
 
 val nameWar: String = "EnvironmentServiceServlet"

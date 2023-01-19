@@ -27,7 +27,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("at.fhooe.sail.vis.main.Main")
+    mainClass.set("at.fhooe.sail.vis.main.EnvironmentRestServer")
 }
 
 
