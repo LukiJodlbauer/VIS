@@ -1,14 +1,18 @@
 package at.fhooe.sail.vis.main;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
+
+import jakarta.xml.bind.*;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.MediaType;
 
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Scanner;
@@ -48,7 +52,7 @@ public class EnvironmentRestClient implements IEnvService {
     }
 
     @Override
-    public EnvData requestEnvironmentData(String _type) throws RemoteException {
+    public EnvData requestEnvironmentData(String _type) throws RemoteException{
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(EnvData.class);
             Unmarshaller um = jaxbContext.createUnmarshaller();
@@ -67,21 +71,21 @@ public class EnvironmentRestClient implements IEnvService {
     }
 
     @Override
-    public EnvData[] requestAll() throws RemoteException {
+    public EnvData[] requestAll() throws RemoteException{
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(SensorDatas.class);
             Unmarshaller um = jaxbContext.createUnmarshaller();
-            um.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
-            um.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+            um.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML);
+            //um.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 
             String query = String.format("output=%s",
-                    URLEncoder.encode("JSON", mCHARSET));
+                    URLEncoder.encode("XML", mCHARSET));
             String response = executeGetRequest(mURL + "data/ALL", query);
-
-            StreamSource json = new StreamSource(new StringReader(response));
-            SensorDatas sensorDatas = um.unmarshal(json, SensorDatas.class).getValue();
-            throw new RuntimeException(response);
-            //return sensorDatas.sensors.toArray(new EnvData[0]);
+            // StreamSource json = new StreamSource(new StringReader(response));
+            SensorDatas sensorDatas = (SensorDatas) um.unmarshal(new StringReader(response));
+            EnvData[] result = new EnvData[sensorDatas.sensors.size()];
+            result = sensorDatas.sensors.toArray(result);
+            return result;
         } catch (UnsupportedEncodingException | JAXBException e) {
             throw new RuntimeException(e);
         }
@@ -99,9 +103,7 @@ public class EnvironmentRestClient implements IEnvService {
             connection.setRequestProperty("Accept-Charset", "UTF-8");
             InputStream response = connection.getInputStream();
             try (Scanner scanner = new Scanner(response)) {
-                String responseBody = scanner.useDelimiter("\\A").next();
-//                System.out.println(responseBody);
-                return responseBody;
+                return scanner.useDelimiter("\\A").next();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
