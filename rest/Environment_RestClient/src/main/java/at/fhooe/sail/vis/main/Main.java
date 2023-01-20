@@ -8,7 +8,7 @@ import java.rmi.RemoteException;
 public class Main {
     /**
      * @param _args
-     * Main entry point that calls multiple endpoint on the EnvironmentRestServer
+     * Main entry point that calls multiple endpoints on the EnvironmentRestServer
      */
     public static void main(String[] _args) {
         try {

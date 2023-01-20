@@ -1,10 +1,11 @@
 package at.fhooe.sail.vis.main;
 
+import jakarta.ws.rs.core.MediaType;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.oxm.MediaType;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
@@ -38,7 +39,6 @@ public class EnvironmentRestClient implements IEnvService {
                     URLEncoder.encode("JSON", mCHARSET));
             String response = executeGetRequest(mURL + "info/sensortypes", query);
 
-
             StreamSource reader = new StreamSource(new StringReader(response));
             Collection<Sensor> sensors = (Collection<Sensor>) um.unmarshal(reader, Sensor.class).getValue();
             return sensors.stream().map(x -> x.name).toArray(String[]::new);
@@ -69,7 +69,8 @@ public class EnvironmentRestClient implements IEnvService {
     @Override
     public EnvData[] requestAll() throws RemoteException {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(SensorDatas.class);
+//            JAXBContext jaxbContext = JAXBContext.newInstance(SensorDatas.class);
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[] {SensorDatas.class}, null);
             Unmarshaller um = jaxbContext.createUnmarshaller();
             um.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             um.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
@@ -80,8 +81,7 @@ public class EnvironmentRestClient implements IEnvService {
 
             StreamSource json = new StreamSource(new StringReader(response));
             SensorDatas sensorDatas = um.unmarshal(json, SensorDatas.class).getValue();
-            throw new RuntimeException(response);
-            //return sensorDatas.sensors.toArray(new EnvData[0]);
+            return sensorDatas.sensors.toArray(new EnvData[0]);
         } catch (UnsupportedEncodingException | JAXBException e) {
             throw new RuntimeException(e);
         }
