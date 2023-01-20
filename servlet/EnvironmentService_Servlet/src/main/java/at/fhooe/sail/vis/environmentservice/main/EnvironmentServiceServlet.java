@@ -35,6 +35,7 @@ public class EnvironmentServiceServlet extends HttpServlet {
 	 */
 	public void doGet(HttpServletRequest _request, HttpServletResponse _response)
 			throws IOException {
+		System.setProperty("javax.xml.bind.context.factory","org.eclipse.persistence.jaxb.JAXBContextFactory");
 		_response.setContentType("text/html");
 		PrintWriter out = _response.getWriter();
 

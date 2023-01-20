@@ -4,6 +4,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.util.ArrayList;
@@ -96,6 +97,7 @@ class SensorDatas{
     /**
      * List of all available sensors
      */
+    @XmlElementWrapper(name="sensors")
     @XmlElement(name = "sensor")
     public List<EnvData> sensors = new ArrayList<>();
 
