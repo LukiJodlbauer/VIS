@@ -97,7 +97,6 @@ class SensorDatas{
     /**
      * List of all available sensors
      */
-    @XmlElementWrapper(name="sensors")
     @XmlElement(name = "sensor")
     public List<EnvData> sensors = new ArrayList<>();
 

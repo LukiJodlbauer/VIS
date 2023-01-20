@@ -99,9 +99,7 @@ public class EnvironmentRestClient implements IEnvService {
             connection.setRequestProperty("Accept-Charset", "UTF-8");
             InputStream response = connection.getInputStream();
             try (Scanner scanner = new Scanner(response)) {
-                String responseBody = scanner.useDelimiter("\\A").next();
-//                System.out.println(responseBody);
-                return responseBody;
+                return scanner.useDelimiter("\\A").next();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

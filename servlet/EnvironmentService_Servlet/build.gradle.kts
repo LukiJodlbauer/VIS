@@ -12,13 +12,7 @@ dependencies {
     implementation(project(":general:EnvironmentI"))
     implementation(project(":soap:dynamic:Environment_SoapClient"))
     implementation(project(":rest:Environment_RestClient"))
-    implementation("org.glassfish.jersey.bundles:jaxrs-ri:3.0.8")
     implementation(project(":rest:Environment_RestServer"))
-    implementation("org.glassfish.jersey.media:jersey-media-moxy:3.1.0")
-    implementation("jakarta.json:jakarta.json-api:2.1.1")
-    // https://mvnrepository.com/artifact/org.eclipse.parsson/parsson
-    implementation("org.eclipse.parsson:parsson:1.1.1")
-    implementation("org.eclipse.persistence:org.eclipse.persistence.moxy:4.0.0-RC2")
 }
 
 val nameWar: String = "EnvironmentServiceServlet"
