@@ -88,8 +88,8 @@ public class EnvironmentServiceServlet extends HttpServlet {
 			String sStackTrace = sw.toString();
 
 			out.println("<p>Server offline!</p>");
-			out.println("<p>" + _e.getMessage() + "</p>");
-			out.println("<p>" + sStackTrace + "</p>");
+//			out.println("<p>" + _e.getMessage() + "</p>");
+//			out.println("<p>" + sStackTrace + "</p>");
 		}
 
 		out.println("</body>");
